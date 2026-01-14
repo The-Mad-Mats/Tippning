@@ -1,0 +1,104 @@
+﻿@page "/matcher"
+
+<h3>Matcher</h3>
+
+<style>
+    .item-image {
+    max-width: 50px;
+    max-height: 50px;
+    object-fit: cover;
+    }
+</style>
+
+<div class="container mt-4">
+    @foreach (var item in Items)
+    {
+        @* <div class="card mb-3"> *@
+        @* <div class="card-body"> *@
+        <div class="row align-items-left">
+            <div class="col-md-2">
+                @item.StartTime.ToString("g")
+            </div>
+            <div class="col-md-1">
+                <img src="@item.Team1Flag" alt="Item image" class="item-image rounded" />
+            </div>
+            <div class="col-md-2">
+                @item.Team1
+            </div>
+            -
+            <div class="col-md-1">
+                <img src="@item.Team2Flag" alt="Item image" class="item-image rounded" />
+            </div>
+            <div class="col-md-2">
+                @item.Team2
+            </div>
+            <div class="col-md-1">
+                <input type="text" class="form-control" @bind="item.Team1Score" />
+            </div>
+            -
+            <div class="col-md-1">
+                <input type="text" class="form-control" @bind="item.Team2Score" />
+            </div>
+        </div>
+        @* </div> *@
+        @* </div> *@
+    }
+
+    <button class="btn btn-primary" @onclick="Spara">Spara</button>
+</div>
+
+@* @code {
+    private List<ItemModel> Items { get; set; } = new();
+
+    protected override void OnInitialized()
+    {
+        Items.Add(new ItemModel
+            {
+                StartTime = DateTime.Now.AddHours(1),
+                Team1Flag = "images/sweden.png",
+                Team1 = "Sverige",
+                Team2Flag = "images/ukraina.png",
+                Team2 = "Ukraina",
+                Team1Score = "",
+                Team2Score = ""
+            });
+
+        Items.Add(new ItemModel
+            {
+                StartTime = DateTime.Now.AddDays(1),
+                Team1Flag = "images/polen.png",
+                Team1 = "Polen",
+                Team2Flag = "images/albanien.png",
+                Team2 = "Albanien",
+                Team1Score = "",
+                Team2Score = ""
+            });
+    }
+
+    private void Spara()
+    {
+        Items.Add(new ItemModel
+            {
+                Team1Flag = "images/default.png",
+                Team1 = $"Item {Items.Count + 1}",
+                Team2Flag = "images/default.png",
+                Team2 = "New item",
+                Team1Score = "",
+                Team2Score = ""
+            });
+    }
+
+    public class ItemModel
+    {
+        public DateTime StartTime = DateTime.MinValue;
+        public string Team1Flag { get; set; } = "";
+        public string Team1 { get; set; } = "";
+        public string Team2Flag { get; set; } = "";
+        public string Team2 { get; set; } = "";
+        public string Team1Score { get; set; } = "";
+        public string Team2Score { get; set; } = "";
+    }
+}
+ *@
+
+
