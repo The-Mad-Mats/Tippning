@@ -2,109 +2,67 @@
 {
     public partial class League
     {
-        private List<Product> products = new();
-        private List<Product> filteredProducts = new();
+        private List<LeagueRow> products = new();
+        private List<LeagueRow> filteredProducts = new();
         private List<string> categories = new();
         private string selectedCategory = "";
         
         protected override void OnInitialized()
         {
             // Initialize sample data
-            products = new List<Product>
+            products = new List<LeagueRow>
             {
-                new Product
+                new LeagueRow
                 {
-                    Id = 1,
-                    Name = "Laptop Pro",
-                    Category = "Electronics",
-                    Price = 1299.99m,
-                    Stock = 15,
-                    Description = "High-performance laptop for professionals"
+                    Position = 1,
+                    Team = "FC Jonathanós",
+                    Liga = "UFL",
+                    Points = 100,
+                    Owner = "Jonathan Eklund"
                 },
-                new Product 
+                new LeagueRow
                 {
-                    Id = 2,
-                    Name = "Wireless Mouse",
-                    Category = "Electronics",
-                    Price = 29.99m,
-                    Stock = 50,
-                    Description = "Ergonomic wireless mouse with precision tracking"
+                    Position = 2,
+                    Team = "Matts Flawless",
+                    Liga = "UFL",
+                    Points = 3,
+                    Owner = "Mats Eklund"
                 },
-                new Product
+                new LeagueRow
                 {
-                    Id = 3,
-                    Name = "Office Chair",
-                    Category = "Furniture",
-                    Price = 249.99m,
-                    Stock = 20,
-                    Description = "Comfortable ergonomic office chair"
+                    Position = 3,
+                    Team = "Gelbander",
+                    Liga = "UFL",
+                    Points = 20,
+                    Owner = "Gustaf"
                 },
-                new Product
+                new LeagueRow
                 {
-                    Id = 4,
-                    Name = "Desk Lamp",
-                    Category = "Furniture",
-                    Price = 45.99m,
-                    Stock = 35,
-                    Description = "Adjustable LED desk lamp"
+                    Position = 4,
+                    Team = "FC Desk Lamp",
+                    Liga = "UFL",
+                    Points = 35,
+                    Owner = "Me"
                 },
-                new Product
+                new LeagueRow
                 {
-                    Id = 5,
-                    Name = "Notebook Set",
-                    Category = "Stationery",
-                    Price = 12.99m,
-                    Stock = 100,
-                    Description = "Premium notebook set with 3 pieces"
+                    Position = 5,
+                    Team = "6-7",
+                    Liga = "UFL",
+                    Points = 100,
+                    Owner = "Ungdomar"
                 },
-                new Product
+                new LeagueRow
                 {
-                    Id = 6,
-                    Name = "Pen Collection",
-                    Category = "Stationery",
-                    Price = 8.99m,
-                    Stock = 75,
-                    Description = "Set of 10 ballpoint pens"
+                    Position = 6,
+                    Team = "hej",
+                    Liga = "UFL",
+                    Points = 75,
+                    Owner = "hej hej"
                 },
-                new Product
-                {
-                    Id = 7,
-                    Name = "Monitor 27\"",
-                    Category = "Electronics",
-                    Price = 399.99m,
-                    Stock = 25,
-                    Description = "4K UHD monitor with HDR support"
-                },
-                new Product
-                {
-                    Id = 8,
-                    Name = "Bookshelf",
-                    Category = "Furniture",
-                    Price = 159.99m,
-                    Stock = 12,
-                    Description = "Modern wooden bookshelf with 5 shelves"
-                },
-                new Product
-                {
-                    Id = 9,
-                    Name = "Sticky Notes",
-                    Category = "Stationery",
-                    Price = 5.99m,
-                    Stock = 200,
-                    Description = "Colorful sticky notes pack"
-                },
-                new Product
-                {
-                    Id = 10,
-                    Name = "Keyboard",
-                    Category = "Electronics",
-                    Price = 79.99m,
-                    Stock = 40,
-                    Description ="Mechanical keyboard with RGB lighting"
-                }
             };
             // Get unique categories
-            categories = products.Select(p => p.Category).Distinct().OrderBy(c => c).ToList();
+            categories = products.Select(p => p.Liga).Distinct().OrderBy(c => c).ToList();
             // Initially show all products
             filteredProducts = products;
         }
@@ -116,17 +74,17 @@
             }
             else
             {
-                filteredProducts = products.Where(p => p.Category == selectedCategory).ToList();
+                filteredProducts = products.Where(p => p.Liga == selectedCategory).ToList();
             }
         }
-        public class Product
+        public class LeagueRow
         {
-            public int Id {get; set; }
-            public string Name {get; set; } = string.Empty;
-            public string Category {get; set; } = string.Empty;
-            public decimal Price { get; set; } 
-            public int Stock { get; set; }
-            public string Description { get; set; } = string.Empty;
+            public int Position {get; set; }
+            public string Team {get; set; } = string.Empty;
+            public string Liga {get; set; } = string.Empty;
+            public string Owner { get; set; } 
+            public int Points { get; set; }
+            
         }
     }
 }

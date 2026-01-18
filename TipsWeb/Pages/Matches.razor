@@ -13,8 +13,8 @@
 <div class="container mt-4">
     @foreach (var item in Items)
     {
-        @* <div class="card mb-3"> *@
-        @* <div class="card-body"> *@
+       @*  <div class="card mb-3">
+        <div class="card-body"> *@
         <div class="row align-items-left">
             <div class="col-md-2">
                 @item.StartTime.ToString("g")
@@ -40,8 +40,8 @@
                 <input type="text" class="form-control" @bind="item.Team2Score" />
             </div>
         </div>
-        @* </div> *@
-        @* </div> *@
+       @*  </div>
+        </div> *@
     }
 
     <button class="btn btn-primary" @onclick="Spara">Spara</button>

@@ -2,13 +2,13 @@
 
 <div class="container">
     <div class="header">
-        <h2>Product Catalog</h2>
+        <h2>Liga</h2>
     </div>
 
     <div class="filter-section">
         <label for="category">Filter by Category:</label>
         <select id="category" class="form-select" @bind="selectedCategory" @bind:after="OnCategoryChanged">
-            <option value="">All Categories</option>
+            @* <option value="">All Categories</option> *@
 
             @foreach (var category in categories)
             {
@@ -19,36 +19,34 @@
         </select>
     </div>
 
-    <div class="results-info">
+    @* <div class="results-info">
         <p>Showing @filteredProducts.Count of @products.Count products</p>
-    </div>
+    </div> *@
 
-    <div class="product-grid">
+   @*  <div class="product-grid"> *@
 
         @if(filteredProducts.Any())
         {
-            @foreach(var product in filteredProducts)
-            {
-                <div class = "product-card">
-                    <div class = "product-header">
-                        <h3>@product.Name</h3>
-                        <span class = "category-badge">
-                            @product.Category
-                        </span>
+            <div class="container mt-4">
+                @foreach(var product in filteredProducts)
+                {
+                    <div class="product-card">
+                    <div class="row align-items-center">
+
+                       <div class="col-md-1">
+                            @product.Position
+                        </div>
+                        <div class="col-md-4">
+                                <b>@product.Team</b> <br />
+                                @product.Owner
+                        </div>
+                        <div class="col-md-1">
+                            @product.Points
+                        </div>
                     </div>
-                    <p class = "product-description">
-                        @product.Description
-                    </p>
-                    <div class = "product-footer">
-                        <span class = "price">
-                            $@product.Price.ToString("F2")
-                        </span>
-                        <span class = "stock">
-                            Stock: @product.Stock
-                        </span>
                     </div>
-                </div>
-            }
+                }
+            </div>
         }
         else
         {
@@ -58,7 +56,7 @@
                 </p>
             </div>
         }
-    </div>
+   @*  </div> *@
 </div>
 
 
