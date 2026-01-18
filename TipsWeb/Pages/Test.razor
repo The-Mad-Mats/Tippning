@@ -1,0 +1,531 @@
+﻿@* @page "/products"
+@page "/products/{Category}"
+
+<!-- ========================================== -->
+<!-- PRODUCTS CONTAINER -->
+<!-- ========================================== -->
+<div class="products-container">
+    
+    <!-- HEADER SECTION -->
+    <div class="products-header">
+        <h2>@GetPageTitle()</h2>
+        <p class="breadcrumb">
+            <a href="/products">All Products</a>
+            
+            @if(!string.IsNullOrEmpty(Category))
+            {
+                <span>
+                    /@Category
+                </span>
+            }
+
+        </p>
+    </div>
+
+    <!-- STATISTICS CARDS -->
+    <div class="products-stats">
+        <div class="stat-card">
+            <div class="stat-value">@filteredProducts.Count</div>
+            <div class="stat-label">Products Found</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@products.Count</div>
+            <div class="stat-label">Total Products</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-value">@GetUniqueCategories()</div>
+            <div class="stat-label">Categories</div>
+        </div>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div class="products-grid">
+        
+@if(filteredProducts.Any())
+{
+    @foreach(var 
+ product 
+in
+ filteredProducts
+)
+
+            
+{
+
+                
+<
+div
+ 
+class
+=
+"
+product-card
+"
+>
+
+                    
+<
+div
+ 
+class
+=
+"
+product-image
+"
+>
+
+                        
+<
+span
+ 
+class
+=
+"
+product-icon
+"
+>
+@
+GetCategoryIcon
+(
+product
+.
+Category
+)
+</
+span
+>
+
+                    
+</
+div
+>
+
+                    
+<
+div
+ 
+class
+=
+"
+product-info
+"
+>
+
+                        
+<
+h3
+>
+@
+product
+.
+Name
+</
+h3
+>
+
+                        
+<
+p
+ 
+class
+=
+"
+product-category
+"
+>
+@
+product
+.
+Category
+</
+p
+>
+
+                        
+<
+p
+ 
+class
+=
+"
+product-description
+"
+>
+@
+product
+.
+Description
+</
+p
+>
+
+                        
+<
+div
+ 
+class
+=
+"
+product-footer
+"
+>
+
+                            
+<
+span
+ 
+class
+=
+"
+product-price
+"
+>
+$
+@
+product
+.
+Price
+.
+ToString
+(
+"F2"
+)
+</
+span
+>
+
+                            
+<
+button
+ 
+class
+=
+"
+btn-view
+"
+ 
+@onclick
+=
+"
+() => ViewProduct(product.Id)
+"
+>
+View Details
+</
+button
+>
+
+                        
+</
+div
+>
+
+                    
+</
+div
+>
+
+                
+</
+div
+>
+
+            
+}
+
+        
+}
+
+        
+else
+
+        
+{
+
+            
+<
+div
+ 
+class
+=
+"
+no-products
+"
+>
+
+                
+<
+span
+ 
+class
+=
+"
+empty-icon
+"
+>
+📦
+</
+span
+>
+
+                
+<
+h3
+>
+No products found
+</
+h3
+>
+
+                
+<
+p
+>
+There are no products in the "
+@
+Category
+" category.
+</
+p
+>
+
+                
+<
+a
+ 
+href
+=
+"
+/products
+"
+ 
+class
+=
+"
+btn-back
+"
+>
+View All Products
+</
+a
+>
+
+            
+</
+div
+>
+
+        
+}
+
+    </div>
+    
+</div>
+
+/* ===================================== */
+/* CONTAINER & LAYOUT */
+/* ===================================== */
+
+.products-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+/* ===================================== */
+/* HEADER SECTION */
+/* ===================================== */
+
+.products-header {
+    margin-bottom: 2rem;
+}
+
+.products-header h2 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 2rem;
+}
+
+.breadcrumb {
+    color: #7f8c8d;
+    margin: 0;
+}
+
+.breadcrumb a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+/* ===================================== */
+/* STATS SECTION */
+/* ===================================== */
+
+.products-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #3498db;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+/* ===================================== */
+/* PRODUCTS GRID */
+/* ===================================== */
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ===================================== */
+/* PRODUCT CARD */
+/* ===================================== */
+
+.product-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.product-image {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-icon {
+    font-size: 3rem;
+}
+
+.product-info {
+    padding: 1.5rem;
+}
+
+.product-info h3 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+    font-size: 1.25rem;
+}
+
+.product-category {
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    margin: 0 0 0.75rem 0;
+    font-weight: 600;
+}
+
+.product-description {
+    color: #555;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 1rem;
+    border-top: 1px solid #ecf0f1;
+}
+
+.product-price {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #27ae60;
+}
+
+/* ===================================== */
+/* BUTTONS */
+/* ===================================== */
+
+.btn-view {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-view:hover {
+    background: #2980b9;
+}
+
+.btn-back {
+    display: inline-block;
+    background: #3498db;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-back:hover {
+    background: #2980b9;
+}
+
+/* ===================================== */
+/* EMPTY STATE */
+/* ===================================== */
+
+.no-products {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: white;
+    border-radius: 8px;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.no-products h3 {
+    color: #2c3e50;
+    margin: 0 0 0.5rem 0;
+}
+
+.no-products p {
+    color: #7f8c8d;
+    margin: 0 0 1.5rem 0;
+} *@
