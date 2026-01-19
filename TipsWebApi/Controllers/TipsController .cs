@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 using TipsWebApi.Models;
 
@@ -29,4 +30,28 @@ public class TipsController : ControllerBase
         }
         return new User();
     }
+    [HttpPost]
+    [Route("UserLeagues")]
+    public List<League> GetUserLeague(GetUserLeagueReq req)
+    {
+        if (CheckUser(req.UserId,req.Token))
+        {
+            var leagues = new List<League>();
+            var userleagues = _context.UserLeagues.Where(x => x.User == req.UserId).Include(y => y.League);
+            foreach (var ul in userleagues)
+            {
+            }
+        }
+        return new List<League>();
+    }
+    private bool CheckUser(int userId, string token)
+    {
+        var user = _context.Users.FirstOrDefault(x => x.Id == userId);
+        if (user != null)
+        {
+            return user.Token == token;
+        }
+        return false;
+    }       
 }
+
