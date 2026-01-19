@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Json;
+using TipsWeb.Models;
 using static System.Net.WebRequestMethods;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -41,5 +42,20 @@ namespace TipsWeb
                 throw new ApplicationException($"Error posting data to API: {ex.Message}");
             }
         }
+        public async Task<User> Login(LoginReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Tips/Login", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<User>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+
     }
 }

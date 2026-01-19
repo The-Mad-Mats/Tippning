@@ -1,4 +1,4 @@
-﻿namespace TipsWeb.Models
+﻿namespace TipsWebApi.Models
 {
     public class User
     {

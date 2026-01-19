@@ -1,9 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Components;
+using System.ComponentModel.DataAnnotations;
+using TipsWeb.Models;
 
 namespace TipsWeb.Pages
 {
     public partial class Login
     {
+        [Inject] public Proxy _proxy { get; set; }
+
         private LoginModel loginModel = new ();
 
         private string errorMessage = string.Empty;
@@ -20,19 +24,26 @@ namespace TipsWeb.Pages
                 // Example: await AuthService.LoginAsync(loginModel.Email, loginModel.Password);
                 // Simulate API call
                 await Task.Delay(1000);
+                var loginReq = new LoginReq
+                {
+                    Username = loginModel.Email,
+                    Password = loginModel.Password
+                };
+                var user = await _proxy.Login(loginReq);
 
                 // For demo purposes - replace with actual authentication
-                if(loginModel.Email == "mats" && loginModel.Password == "password")
+                if (user.Id != 0)
                 {
                     // Navigate to home or dashboard
                     // NavigationManager.NavigateTo("/");
-                    var user = new Models.User
-                    {
-                        UserName = "mats",
-                        Password = "password",
-                        Id = 1,
-                        Token = "xyz"
-                    };
+
+                    //var user = new Models.User
+                    //{
+                    //    UserName = "mats",
+                    //    Password = "password",
+                    //    Id = 1,
+                    //    Token = "xyz"
+                    //};
                     AppState.SetProduct(user);
                 }
                 else
