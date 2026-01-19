@@ -1,4 +1,6 @@
-﻿namespace TipsWeb.Pages
+﻿using TipsWeb.Models;
+
+namespace TipsWeb.Pages
 {
     public partial class League
     {
@@ -6,9 +8,10 @@
         private List<LeagueRow> filteredProducts = new();
         private List<string> categories = new();
         private string selectedCategory = "";
-        
+        private User user = new();
         protected override void OnInitialized()
         {
+            user = AppState.SelectedProduct;
             // Initialize sample data
             products = new List<LeagueRow>
             {

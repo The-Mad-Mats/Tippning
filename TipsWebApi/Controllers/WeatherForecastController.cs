@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TipsWebApi.Models;
 
 namespace TipsWebApi.Controllers;
 

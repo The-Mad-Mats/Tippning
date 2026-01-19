@@ -22,10 +22,18 @@ namespace TipsWeb.Pages
                 await Task.Delay(1000);
 
                 // For demo purposes - replace with actual authentication
-                if(loginModel.Email == "demo@example.com" && loginModel.Password == "password")
+                if(loginModel.Email == "mats" && loginModel.Password == "password")
                 {
                     // Navigate to home or dashboard
                     // NavigationManager.NavigateTo("/");
+                    var user = new Models.User
+                    {
+                        UserName = "mats",
+                        Password = "password",
+                        Id = 1,
+                        Token = "xyz"
+                    };
+                    AppState.SetProduct(user);
                 }
                 else
                 {
@@ -44,7 +52,7 @@ namespace TipsWeb.Pages
         public class LoginModel
         {
             [Required(ErrorMessage = "Email is required")]
-            [EmailAddress(ErrorMessage = "Invalid email address")]
+            //[EmailAddress(ErrorMessage = "Invalid email address")]
             public string Email {get; set;} = string.Empty;
 
             [Required(ErrorMessage = "Password is required")]
