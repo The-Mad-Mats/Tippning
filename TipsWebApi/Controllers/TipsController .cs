@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using TipsWebApi.Entities;
 using TipsWebApi.Models;
 
 namespace TipsWebApi.Controllers;
@@ -21,28 +22,46 @@ public class TipsController : ControllerBase
 
     [HttpPost]
     [Route("Login")]
-    public User Login(LoginReq loginReq)
+    public Models.User Login(LoginReq loginReq)
     {
         var user = _context.Users.FirstOrDefault(x => x.UserName == loginReq.Username && x.Password == loginReq.Password);
         if (user != null)
         {
-            return user;
+            var userDto = new Models.User
+            {
+                Id = user.Id,
+                UserName = user.UserName,
+                Team = user.Team,
+                Points = user.Points,
+                Token = user.Token
+            };
+            return userDto;
         }
-        return new User();
+        return new Models.User();
     }
     [HttpPost]
     [Route("UserLeagues")]
-    public List<League> GetUserLeague(GetUserLeagueReq req)
+    public List<Models.League> GetUserLeague(GetUserLeagueReq req)
     {
         if (CheckUser(req.UserId,req.Token))
         {
-            var leagues = new List<League>();
-            var userleagues = _context.UserLeagues.Where(x => x.User == req.UserId).Include(y => y.League);
+            var leagues = new List<Models.League>();
+            var userleagues = _context.UserLeagues.Include(y => y.League).Where(x => x.UserId == req.UserId).ToList();
             foreach (var ul in userleagues)
             {
+                if (ul.League != null)
+                {
+                    var leagueDto = new Models.League
+                    {
+                        Id = ul.League.Id,
+                        Name = ul.League.Name,
+                    };
+                    leagues.Add(leagueDto);
+                }
             }
+            return leagues;
         }
-        return new List<League>();
+        return new List<Models.League>();
     }
     private bool CheckUser(int userId, string token)
     {

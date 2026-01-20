@@ -1,4 +1,4 @@
-﻿namespace TipsWebApi.Models
+﻿namespace TipsWebApi.Entities
 {
     public class User
     {
@@ -8,6 +8,7 @@
         public string Team { get; set; } = "";
         public int Points { get; set; }
         public string Token { get; set; } = "";
+        public virtual ICollection<UserLeague>? UserLeagues { get; set; }
 
     }
 }
