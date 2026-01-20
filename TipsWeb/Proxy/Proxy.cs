@@ -56,6 +56,20 @@ namespace TipsWeb
                 throw new ApplicationException($"Error posting data to API: {ex.Message}");
             }
         }
+        public async Task<bool> CreateUser(CreateUserReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Tips/CreateUser", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
 
     }
 }

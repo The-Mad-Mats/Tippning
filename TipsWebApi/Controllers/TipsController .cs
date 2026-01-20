@@ -39,9 +39,10 @@ public class TipsController : ControllerBase
         }
         return new Models.User();
     }
+
     [HttpPost]
-    [Route("UserLeagues")]
-    public List<Models.League> GetUserLeague(GetUserLeagueReq req)
+    [Route("GetUserLeagues")]
+    public List<Models.League> GetUserLeagues(GetUserLeagueReq req)
     {
         if (CheckUser(req.UserId,req.Token))
         {
@@ -63,6 +64,32 @@ public class TipsController : ControllerBase
         }
         return new List<Models.League>();
     }
+
+    [HttpPost]
+    [Route("CreateUser")]
+    public bool CreateUser(CreateUserReq req)
+    {
+        try
+        {
+            var user = new Entities.User()
+            {
+                UserName = req.UserName,
+                Password = req.Password,
+                Team = req.Team,
+                Token = Guid.NewGuid().ToString(),
+                Points = 0,
+                Admin = false
+            };
+            _context.Users.Add(user);
+            var userId = _context.SaveChanges();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
     private bool CheckUser(int userId, string token)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);

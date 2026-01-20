@@ -1,10 +1,13 @@
-﻿namespace TipsWeb.Pages
+﻿using Microsoft.AspNetCore.Components;
+
+namespace TipsWeb.Pages
 {
     public partial class Register
     {
         // ========================================
         // FIELDS
         // ========================================
+        [Inject] public Proxy _proxy { get; set; }
         public UserModel userModel = new ();
         private List<UserModel> addedUsers = new();
         private string successMessage = string.Empty;
@@ -30,23 +33,29 @@
             successMessage = string.Empty;
             try
             {
-                // Simulate API call
-                await Task.Delay(500);
-                // Add your API logic here
-                // Example: await UserService.CreateUserAsync(userModel);
-                // Add user to list
-                addedUsers.Add(new UserModel
+                var createUserReq = new Models.CreateUserReq
                 {
-                    Username = userModel.Username,
+                    UserName = userModel.Username,
                     Password = userModel.Password,
                     Team = userModel.Team
-                });
+                };
+                var status = await _proxy.CreateUser(createUserReq);
+                if (status)
+                {
+                    // Add user to list
+                    addedUsers.Add(new UserModel
+                    {
+                        Username = userModel.Username,
+                        Password = userModel.Password,
+                        Team = userModel.Team
+                    });
 
-                successMessage = $"User '{userModel.Username}' added successfully!";
+                    successMessage = $"User '{userModel.Username}' added successfully!";
 
-                // Reset form after successful submission
-                await Task.Delay(1500);
-                ResetForm();
+                    // Reset form after successful submission
+                    await Task.Delay(1500);
+                    ResetForm();
+                }
             }
             catch(Exception ex)
             {

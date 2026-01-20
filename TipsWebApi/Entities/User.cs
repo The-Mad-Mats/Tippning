@@ -8,6 +8,7 @@
         public string Team { get; set; } = "";
         public int Points { get; set; }
         public string Token { get; set; } = "";
+        public bool Admin { get; set; }
         public virtual ICollection<UserLeague>? UserLeagues { get; set; }
 
     }
