@@ -45,6 +45,7 @@ namespace TipsWeb.Pages
                     //    Token = "xyz"
                     //};
                     AppState.SetProduct(user);
+                    //NavigationManager.NavigateTo("/");
                 }
                 else
                 {

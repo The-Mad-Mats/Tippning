@@ -1,7 +1,16 @@
 ﻿@page "/"
+@inject Models.AppState AppState
+
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Fotbolls VM 2026</h1>
 
-Welcome to your new app.
+@if(user == null)
+{
+    <div>Du är inte inloggad</div>
+}
+else
+{
+    <div>Välkommen @user.UserName</div>
+}

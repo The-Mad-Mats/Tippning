@@ -1,6 +1,6 @@
 ﻿<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">TipsWeb</a>
+        <a class="navbar-brand" href="">Gissa resultat med anhöriga</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -15,6 +15,21 @@
             </NavLink>
         </div>
         <div class="nav-item px-3">
+            <NavLink class="nav-link" href="login">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Login
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="matcher">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Matcher
+            </NavLink>
+        </div>
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="leagues">
+                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Tabell
+            </NavLink>
+        </div>
+@*         <div class="nav-item px-3">
             <NavLink class="nav-link" href="counter">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
             </NavLink>
@@ -24,22 +39,7 @@
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
             </NavLink>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="matcher">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Matcher
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="login">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Login
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="leagues">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Tabell
-            </NavLink>
-        </div>
-    </nav>
+ *@    </nav>
 </div>
 
 @code {
