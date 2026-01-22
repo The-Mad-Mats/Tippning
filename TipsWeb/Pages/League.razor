@@ -11,10 +11,10 @@
         <select id="category" class="form-select" @bind="selectedCategory" @bind:after="OnCategoryChanged">
             @* <option value="">All Categories</option> *@
 
-            @foreach (var category in categories)
+            @foreach (var category in Leagues)
             {
-                <option value = "@category">
-                    @category
+                <option value = "@category.Id">
+                    @category.Name
                 </option>
             }
         </select>

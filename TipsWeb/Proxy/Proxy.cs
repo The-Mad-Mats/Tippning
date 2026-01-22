@@ -70,6 +70,19 @@ namespace TipsWeb
                 throw new ApplicationException($"Error posting data to API: {ex.Message}");
             }
         }
-
+        public async Task<List<League>> GetUserleague(GetUserLeagueReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Tips/GetUserLeagues", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<League>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
     }
 }

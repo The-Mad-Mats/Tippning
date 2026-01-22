@@ -39,7 +39,7 @@ public class TipsController : ControllerBase
         }
         return new Models.User();
     }
-
+    
     [HttpPost]
     [Route("GetUserLeagues")]
     public List<Models.League> GetUserLeagues(GetUserLeagueReq req)
