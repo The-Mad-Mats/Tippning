@@ -1,0 +1,212 @@
+﻿@page "/admin"
+
+<!-- ========================================== -->
+<!-- GAMES LIST CONTAINER -->
+<!-- ========================================== -->
+<div class="container">
+    
+    <div class="header">
+        <h2>Games Management</h2>
+    </div>
+
+    <!-- GAMES LIST -->
+    <div class="games-list">
+        
+        @if(games.Any())
+        {
+            @foreach(var game in games)
+            {
+                <div class="game-row">
+                    <div class="checkbox-cell">
+                        <input type="checkbox" @bind="game.IsSelected"/>
+                    </div>
+                    <div class="text-cell">
+                        @game.Name
+                    </div>
+                    <div class="text-cell">
+                        @game.Category
+                    </div>
+                    <div class="input-cell">
+                        <input type="text" class="text-input" @bind="game.Score" placeholder="Score"/>
+                    </div>
+                    <div class="input-cell">
+                        <input type="text" class="text-input" @bind="game.Result" placeholder="Result"/>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <p>No games available. Click "Add Games" to get started.</p>
+            </div>
+        }
+    </div>
+    <!-- BUTTONS -->
+    <div class="button-container">
+        <button class="btn btn-primary" @onclick="DoCalculation">Do Calculation</button>
+        <button class="btn btn-secondary" @onclick="AddGames">Add Games</button>
+    </div>
+    <!-- CALCULATION RESULT -->
+    @if(!string.IsNullOrEmpty(calculationResult))
+    {
+        <div class="result-message">
+            <strong>
+                Calculation Result:
+            </strong>
+            @calculationResult
+        </div>
+    }
+</div>
+
+<style>
+    /* ===================================== */
+    /* CONTAINER & LAYOUT */
+    /* ===================================== */
+    
+    .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .header {
+        margin-bottom: 2rem;
+    }
+
+    .header h2 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 2rem;
+    }
+
+    /* ===================================== */
+    /* GAMES LIST */
+    /* ===================================== */
+    
+    .games-list {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .game-row {
+        display: grid;
+        grid-template-columns: 60px 1fr 1fr 150px 150px;
+        align-items: center;
+        padding: 1rem;
+        border-bottom: 1px solid #e0e0e0;
+        transition: background 0.2s;
+    }
+
+    .game-row:hover {
+        background: #f8f9fa;
+    }
+
+    .game-row:last-child {
+        border-bottom: none;
+    }
+
+    .checkbox-cell {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .checkbox-cell input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+    }
+
+    .text-cell {
+        color: #2c3e50;
+        font-weight: 500;
+        padding: 0 1rem;
+    }
+
+    .input-cell {
+        padding: 0 0.5rem;
+    }
+
+    .text-input {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+    }
+
+    .text-input:focus {
+        outline: none;
+        border-color: #667eea;
+    }
+
+    .empty-state {
+        padding: 3rem;
+        text-align: center;
+        color: #7f8c8d;
+    }
+
+    /* ===================================== */
+    /* BUTTONS */
+    /* ===================================== */
+    
+    .button-container {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #5568d3;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-secondary {
+        background: #27ae60;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #229954;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+    }
+
+    /* ===================================== */
+    /* RESULT MESSAGE */
+    /* ===================================== */
+    
+    .result-message {
+        background: #e8f5e9;
+        border-left: 4px solid #27ae60;
+        padding: 1rem;
+        border-radius: 4px;
+        color: #2c3e50;
+    }
+
+    /* ===================================== */
+    /* RESPONSIVE */
+    /* ===================================== */
+    
+ </style>

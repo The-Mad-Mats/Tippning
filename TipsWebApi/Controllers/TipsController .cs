@@ -66,6 +66,34 @@ public class TipsController : ControllerBase
     }
 
     [HttpPost]
+    [Route("GetLeague")]
+    public List<Models.LeagueRow> GetLeague(GetLeagueReq req)
+    {
+        if (CheckUser(req.UserId, req.Token))
+        {
+            var leagues = new List<Models.LeagueRow>();
+            var userleagues = _context.UserLeagues.Include(y => y.User).Where(x => x.LeagueId == req.LeagueId).ToList();
+            var position = 1;
+            foreach (var ul in userleagues.OrderBy(x => x.User.Points))
+            {
+                if (ul.User != null)
+                {
+                    var leagueDto = new Models.LeagueRow
+                    {
+                        Position = position++,
+                        UserName = ul.User.UserName,
+                        Team = ul.User.Team,
+                        Points = ul.User.Points
+                    };
+                    leagues.Add(leagueDto);
+                }
+            }
+            return leagues;
+        }
+        return new List<Models.LeagueRow>();
+    }
+
+    [HttpPost]
     [Route("CreateUser")]
     public bool CreateUser(CreateUserReq req)
     {

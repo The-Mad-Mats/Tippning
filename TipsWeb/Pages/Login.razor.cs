@@ -7,6 +7,7 @@ namespace TipsWeb.Pages
     public partial class Login
     {
         [Inject] public Proxy _proxy { get; set; }
+        [Inject] public NavigationManager NavigationManager { get; set; }
 
         private LoginModel loginModel = new ();
 
@@ -20,10 +21,6 @@ namespace TipsWeb.Pages
             errorMessage = string.Empty;
             try
             {
-                // Add your authentication logic here
-                // Example: await AuthService.LoginAsync(loginModel.Email, loginModel.Password);
-                // Simulate API call
-                await Task.Delay(1000);
                 var loginReq = new LoginReq
                 {
                     Username = loginModel.Email,
@@ -31,21 +28,10 @@ namespace TipsWeb.Pages
                 };
                 var user = await _proxy.Login(loginReq);
 
-                // For demo purposes - replace with actual authentication
                 if (user.Id != 0)
                 {
-                    // Navigate to home or dashboard
-                    // NavigationManager.NavigateTo("/");
-
-                    //var user = new Models.User
-                    //{
-                    //    UserName = "mats",
-                    //    Password = "password",
-                    //    Id = 1,
-                    //    Token = "xyz"
-                    //};
                     AppState.SetProduct(user);
-                    //NavigationManager.NavigateTo("/");
+                    NavigationManager.NavigateTo("/");
                 }
                 else
                 {
@@ -68,7 +54,7 @@ namespace TipsWeb.Pages
             public string Email {get; set;} = string.Empty;
 
             [Required(ErrorMessage = "Password is required")]
-            [MinLength(6,ErrorMessage = "Password must be at least 6 characters")]
+            //[MinLength(6,ErrorMessage = "Password must be at least 6 characters")]
             public string Password {get; set;} = string.Empty;
 
             public bool RememberMe {get; set;}

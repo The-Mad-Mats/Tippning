@@ -8,9 +8,8 @@
 
     <div class="filter-section">
         <label for="category">Filter by Category:</label>
-        <select id="category" class="form-select" @bind="selectedCategory" @bind:after="OnCategoryChanged">
-            @* <option value="">All Categories</option> *@
-
+        <select id="category" class="form-select" @bind="selectedLeague" @bind:after="OnCategoryChanged">
+            @*<option value="">All Categories</option>*@
             @foreach (var category in Leagues)
             {
                 <option value = "@category.Id">
@@ -26,23 +25,23 @@
 
    @*  <div class="product-grid"> *@
 
-        @if(filteredProducts.Any())
+        @if(LeagueRows.Any())
         {
             <div class="container mt-4">
-                @foreach(var product in filteredProducts)
+                @foreach(var row in LeagueRows)
                 {
                     <div class="product-card">
                     <div class="row align-items-center">
 
                        <div class="col-md-1">
-                            @product.Position
+                            @row.Position
                         </div>
                         <div class="col-md-4">
-                                <b>@product.Team</b> <br />
-                                @product.Owner
+                            <b>@row.Team</b> <br />
+                            @row.UserName
                         </div>
                         <div class="col-md-1">
-                            @product.Points
+                            @row.Points
                         </div>
                     </div>
                     </div>
@@ -53,7 +52,7 @@
         {
             <div class = "no-results">
                 <p>
-                    No products found in this category.
+                    Inga lag i den här ligan
                 </p>
             </div>
         }
