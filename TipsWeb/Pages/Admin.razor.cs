@@ -7,6 +7,8 @@
         // ========================================
         private List <GameItem> games = new();
         private string calculationResult = string.Empty;
+        private bool showPopup = false;
+        private GameItem newGame = new();
         // ========================================
         // LIFECYCLE METHODS
         // ========================================
@@ -24,46 +26,46 @@
                 new()
                 {
                     Id = 1,
-                    Name = "Football Match",
-                    Category = "Sports",
-                    Score = "",
-                    Result = "", 
+                    HomeTeam = "Football Match",
+                    AwayTeam = "Sports",
+                    HomeTeamScore = "",
+                    AwayTeamScore    = "", 
                     IsSelected = false
                 },
                 new()
                 {
                     Id = 2,
-                    Name = "Basketball Game",
-                    Category = "Sports",
-                    Score = "",
-                    Result = "",
+                    HomeTeam = "Basketball Game",
+                    AwayTeam = "Sports",
+                    HomeTeamScore = "",
+                    AwayTeamScore = "",
                     IsSelected = false
                 },
                 new()
                 {
                     Id = 3,
-                    Name = "Chess Tournament",
-                    Category = "Board Games",
-                    Score = "",
-                    Result = "",
+                    HomeTeam = "Chess Tournament",
+                    AwayTeam = "Board Games",
+                    HomeTeamScore = "",
+                    AwayTeamScore = "",
                     IsSelected = false
                 },
                 new()
                 {   
                     Id = 4,
-                    Name = "Tennis Match",
-                    Category = "Sports",
-                    Score = "", 
-                    Result = "",
+                    HomeTeam = "Tennis Match",
+                    AwayTeam = "Sports",
+                    HomeTeamScore = "",
+                    AwayTeamScore = "",
                     IsSelected = false
                 },
                 new()
                 {
                     Id = 5,
-                    Name = "Video Game Contest",
-                    Category = "E-Sports",
-                    Score = "",
-                    Result = "",
+                    HomeTeam = "Video Game Contest",
+                    AwayTeam = "E-Sports",
+                    HomeTeamScore = "",
+                    AwayTeamScore = "",
                     IsSelected = false
                 }
             };
@@ -83,7 +85,7 @@
             int totalScore = 0;
             foreach(var game in selectedGames)
             {
-                if(int.TryParse(game.Score, out int score))
+                if(int.TryParse(game.HomeTeamScore, out int score))
                 {
                     totalScore += score;
                 }
@@ -91,30 +93,66 @@
             calculationResult = $"Selected {selectedGames.Count} game(s).Total Score: {totalScore}";
         }
         private void AddGames()
+        { 
+            OpenPopup();
+            //var newId = games.Any() ? games.Max(g => g.Id) + 1 : 1;
+            //games.Add(new GameItem
+            //{
+            //    Id = newId, 
+            //    HomeTeam = $"New Game {newId}", 
+            //    AwayTeam = "Uncategorized", 
+            //    HomeTeamScore = "",
+            //    AwayTeamScore = "",
+            //    IsSelected = false
+            //});
+            //calculationResult = $"Added new game with ID {newId}";
+        }
+        // ========================================
+        // POPUP METHODS
+        // ========================================
+        private void OpenPopup()
         {
-            var newId = games.Any() ? games.Max(g => g.Id) + 1 : 1;
+            newGame = new GameItem
+            {
+                Date = DateTime.Now
+            };
+            showPopup = true;
+        }
+        private void ClosePopup()
+        {
+            showPopup = false;
+            newGame = new GameItem();
+        }
+        private void SaveGame()
+        {
+            if(string.IsNullOrWhiteSpace(newGame.HomeTeam) || string.IsNullOrWhiteSpace(newGame.AwayTeam))
+            {
+                // You can add validation message here
+                return;
+            }
             games.Add(new GameItem
             {
-                Id = newId, 
-                Name = $"New Game {newId}", 
-                Category = "Uncategorized", 
-                Score = "",
-                Result = "",
-                IsSelected = false
+                Id = games.Any() ? games.Max(g =>g.Id) + 1 : 1,
+                Date = newGame.Date,
+                HomeTeam = newGame.HomeTeam,
+                AwayTeam = newGame.AwayTeam
             });
-            calculationResult = $"Added new game with ID {newId}";
+            ClosePopup();
         }
+
         // ========================================
         // MODELS
         // ========================================
         public class GameItem
         {
             public int Id {get; set;}
-            public string Name {get; set;} = "";
-            public string Category {get; set;} = "";
-            public string Score {get; set;} = "";
-            public string Result {get; set;} = "";
+            public DateTime Date { get; set; } = DateTime.Now;
+            public string HomeTeam { get; set; } = "";
+            public string AwayTeam { get; set; } = "";
+            public string HomeTeamScore {get; set;} = "";
+            public string AwayTeamScore {get; set;} = "";
             public bool IsSelected {get; set;}
         }
+
     }
 }
