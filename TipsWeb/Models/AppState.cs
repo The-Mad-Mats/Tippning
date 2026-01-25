@@ -1,16 +1,34 @@
 ﻿namespace TipsWeb.Models
 {
+    //public class AppState
+    //{
+    //    public User SelectedProduct { get; set; }
+
+    //    public event Action OnChange;
+
+    //    public void SetProduct(User product)
+    //    {
+    //        SelectedProduct = product;
+    //        NotifyStateChanged();
+    //    }
+
+    //    private void NotifyStateChanged() => OnChange?.Invoke();
+    //}
     public class AppState
     {
-        public User SelectedProduct { get; set; }
+        private User? _currentUser;
 
-        public event Action OnChange;
-
-        public void SetProduct(User product)
+        public User? CurrentUser
         {
-            SelectedProduct = product;
-            NotifyStateChanged();
+            get => _currentUser;
+            set
+            {
+                _currentUser = value;
+                NotifyStateChanged();
+            }
         }
+
+        public event Action? OnChange;
 
         private void NotifyStateChanged() => OnChange?.Invoke();
     }

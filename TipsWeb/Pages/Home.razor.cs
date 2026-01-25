@@ -7,7 +7,7 @@ namespace TipsWeb.Pages
         public User user = new();
         protected override void OnInitialized()
         {
-            user = AppState.SelectedProduct;
+            user = AppState.CurrentUser;
         }
     }
 }

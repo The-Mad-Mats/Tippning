@@ -13,10 +13,13 @@ namespace TipsWeb.Pages
         private User user = new();
         protected override async Task OnInitializedAsync()
         {
-            user = AppState.SelectedProduct;
-            Leagues = await _proxy.GetUserleague(new GetUserLeagueReq { UserId = user.Id, Token = user.Token });
-            selectedLeague = Leagues.FirstOrDefault()?.Name ?? "";
-            await OnCategoryChanged();
+            user = AppState.CurrentUser;
+            if (user != null)
+            {
+                Leagues = await _proxy.GetUserleague(new GetUserLeagueReq { UserId = user.Id, Token = user.Token });
+                selectedLeague = Leagues.FirstOrDefault()?.Name ?? "";
+                await OnCategoryChanged();
+            }
         }
         private async Task OnCategoryChanged()
         {

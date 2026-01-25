@@ -7,7 +7,12 @@ namespace TipsWeb.Layout
         private User user = new();
         protected override async Task OnInitializedAsync()
         {
-            user = AppState.SelectedProduct;
+            AppState.OnChange += StateHasChanged;
+            //user = AppState.CurrentUser;
+        }
+        public void Dispose()
+        {
+            AppState.OnChange -= StateHasChanged;
         }
     }
 }

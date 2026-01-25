@@ -30,7 +30,7 @@ namespace TipsWeb.Pages
 
                 if (user.Id != 0)
                 {
-                    AppState.SetProduct(user);
+                    AppState.CurrentUser = user;
                     NavigationManager.NavigateTo("/");
                 }
                 else

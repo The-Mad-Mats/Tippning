@@ -33,7 +33,8 @@ public class TipsController : ControllerBase
                 UserName = user.UserName,
                 Team = user.Team,
                 Points = user.Points,
-                Token = user.Token
+                Token = user.Token,
+                Admin = user.Admin,
             };
             return userDto;
         }
