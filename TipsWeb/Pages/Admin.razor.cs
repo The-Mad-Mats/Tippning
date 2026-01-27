@@ -1,74 +1,79 @@
-﻿namespace TipsWeb.Pages
+﻿using Microsoft.AspNetCore.Components;
+using TipsWeb.Models;
+
+namespace TipsWeb.Pages
 {
     public partial class Admin
     {
         // ========================================
         // FIELDS
         // ========================================
-        private List <GameItem> games = new();
+        [Inject] public Proxy _proxy { get; set; }
+        private List <GameAdmin> games = new();
         private string calculationResult = string.Empty;
         private bool showPopup = false;
-        private GameItem newGame = new();
+        private GameAdmin newGame = new();
         // ========================================
         // LIFECYCLE METHODS
         // ========================================
-        protected override void OnInitialized()
+        protected override async Task OnInitializedAsync()
         {
-            LoadInitialGames();
+            await LoadInitialGames();
         }
         // ========================================
         // DATA METHODS
         // ========================================
-        private void LoadInitialGames()
+        private async Task LoadInitialGames()
         {
-            games = new List<GameItem>
-            {
-                new()
-                {
-                    Id = 1,
-                    HomeTeam = "Football Match",
-                    AwayTeam = "Sports",
-                    HomeTeamScore = "",
-                    AwayTeamScore    = "", 
-                    IsSelected = false
-                },
-                new()
-                {
-                    Id = 2,
-                    HomeTeam = "Basketball Game",
-                    AwayTeam = "Sports",
-                    HomeTeamScore = "",
-                    AwayTeamScore = "",
-                    IsSelected = false
-                },
-                new()
-                {
-                    Id = 3,
-                    HomeTeam = "Chess Tournament",
-                    AwayTeam = "Board Games",
-                    HomeTeamScore = "",
-                    AwayTeamScore = "",
-                    IsSelected = false
-                },
-                new()
-                {   
-                    Id = 4,
-                    HomeTeam = "Tennis Match",
-                    AwayTeam = "Sports",
-                    HomeTeamScore = "",
-                    AwayTeamScore = "",
-                    IsSelected = false
-                },
-                new()
-                {
-                    Id = 5,
-                    HomeTeam = "Video Game Contest",
-                    AwayTeam = "E-Sports",
-                    HomeTeamScore = "",
-                    AwayTeamScore = "",
-                    IsSelected = false
-                }
-            };
+            games = await _proxy.GetGames(new GetGamesReq { UserId = AppState.CurrentUser.Id, Token = AppState.CurrentUser.Token });
+            //games = new List<GameAdmin>
+            //{
+            //    new()
+            //    {
+            //        Id = 1,
+            //        HomeTeam = "Football Match",
+            //        AwayTeam = "Sports",
+            //        HomeTeamScore = "",
+            //        AwayTeamScore    = "", 
+            //        IsSelected = false
+            //    },
+            //    new()
+            //    {
+            //        Id = 2,
+            //        HomeTeam = "Basketball Game",
+            //        AwayTeam = "Sports",
+            //        HomeTeamScore = "",
+            //        AwayTeamScore = "",
+            //        IsSelected = false
+            //    },
+            //    new()
+            //    {
+            //        Id = 3,
+            //        HomeTeam = "Chess Tournament",
+            //        AwayTeam = "Board Games",
+            //        HomeTeamScore = "",
+            //        AwayTeamScore = "",
+            //        IsSelected = false
+            //    },
+            //    new()
+            //    {   
+            //        Id = 4,
+            //        HomeTeam = "Tennis Match",
+            //        AwayTeam = "Sports",
+            //        HomeTeamScore = "",
+            //        AwayTeamScore = "",
+            //        IsSelected = false
+            //    },
+            //    new()
+            //    {
+            //        Id = 5,
+            //        HomeTeam = "Video Game Contest",
+            //        AwayTeam = "E-Sports",
+            //        HomeTeamScore = "",
+            //        AwayTeamScore = "",
+            //        IsSelected = false
+            //    }
+            //};
         }
         // ========================================
         // EVENT HANDLERS
@@ -85,10 +90,7 @@
             int totalScore = 0;
             foreach(var game in selectedGames)
             {
-                if(int.TryParse(game.HomeTeamScore, out int score))
-                {
-                    totalScore += score;
-                }
+                totalScore += game.Team1Score ?? 0;
             }
             calculationResult = $"Selected {selectedGames.Count} game(s).Total Score: {totalScore}";
         }
@@ -112,47 +114,50 @@
         // ========================================
         private void OpenPopup()
         {
-            newGame = new GameItem
+            newGame = new GameAdmin
             {
-                Date = DateTime.Now
+                DateTime = DateTime.Today.AddHours(15),
             };
             showPopup = true;
         }
         private void ClosePopup()
         {
             showPopup = false;
-            newGame = new GameItem();
+            newGame = new GameAdmin();
         }
-        private void SaveGame()
+        private async Task SaveGame()
         {
-            if(string.IsNullOrWhiteSpace(newGame.HomeTeam) || string.IsNullOrWhiteSpace(newGame.AwayTeam))
+            if(string.IsNullOrWhiteSpace(newGame.Team1) || string.IsNullOrWhiteSpace(newGame.Team2))
             {
                 // You can add validation message here
                 return;
             }
-            games.Add(new GameItem
+            var game = new AddGameReq
             {
-                Id = games.Any() ? games.Max(g =>g.Id) + 1 : 1,
-                Date = newGame.Date,
-                HomeTeam = newGame.HomeTeam,
-                AwayTeam = newGame.AwayTeam
-            });
+                UserId = AppState.CurrentUser?.Id ?? 0,
+                Token = AppState.CurrentUser?.Token ?? "",
+                Date = newGame.DateTime,
+                HomeTeam = newGame.Team1,
+                AwayTeam = newGame.Team2
+            };
+            await _proxy.AddGame(game);
             ClosePopup();
+            await LoadInitialGames();
         }
 
         // ========================================
         // MODELS
         // ========================================
-        public class GameItem
-        {
-            public int Id {get; set;}
-            public DateTime Date { get; set; } = DateTime.Now;
-            public string HomeTeam { get; set; } = "";
-            public string AwayTeam { get; set; } = "";
-            public string HomeTeamScore {get; set;} = "";
-            public string AwayTeamScore {get; set;} = "";
-            public bool IsSelected {get; set;}
-        }
+        //public class GameItem
+        //{
+        //    public int Id {get; set;}
+        //    public DateTime Date { get; set; } = DateTime.Now;
+        //    public string HomeTeam { get; set; } = "";
+        //    public string AwayTeam { get; set; } = "";
+        //    public string HomeTeamScore {get; set;} = "";
+        //    public string AwayTeamScore {get; set;} = "";
+        //    public bool IsSelected {get; set;}
+        //}
 
     }
 }

@@ -1,4 +1,5 @@
 ﻿@page "/admin"
+@inject Models.AppState AppState
 
 <!-- ========================================== -->
 <!-- GAMES LIST CONTAINER -->
@@ -10,27 +11,30 @@
     </div>
 
     <!-- GAMES LIST -->
-    <div class="games-list">
+    <div class="container mt-5">
         
         @if(games.Any())
         {
             @foreach(var game in games)
             {
-                <div class="game-row">
-                    <div class="checkbox-cell">
+                <div class="row align-items-left">
+                    <div class="col-md-auto">
                         <input type="checkbox" @bind="game.IsSelected"/>
                     </div>
-                    <div class="text-cell">
-                        @game.HomeTeam
+                    <div class="col-md-2">
+                        @game.DateTime.ToString("g")
                     </div>
-                    <div class="text-cell">
-                        @game.AwayTeam
+                    <div class="col-md-2">
+                        @game.Team1
                     </div>
-                    <div class="input-cell">
-                        <input type="text" class="text-input" @bind="game.HomeTeamScore" placeholder="Home tema score"/>
+                    <div class="col-md-2">
+                        @game.Team2
                     </div>
-                    <div class="input-cell">
-                        <input type="text" class="text-input" @bind="game.AwayTeamScore" placeholder="Away team score"/>
+                    <div class="col-md-1">
+                        <input type="text" class="text-input" @bind="game.Team1Score" placeholder="Home tema score"/>
+                    </div>
+                    <div class="col-md-1">
+                        <input type="text" class="text-input" @bind="game.Team2Score" placeholder="Away team score"/>
                     </div>
                 </div>
             }
@@ -77,21 +81,21 @@
                     <label for="date">
                         Date
                     </label>
-                    <input type="datetime" id="date" class="form-control" @bind="newGame.Date"/>
+                    <input type="datetime" id="date" class="form-control" @bind="newGame.DateTime"/>
                 </div>
                 <!-- HOME TEAM FIELD -->
                 <div class="form-group">
                     <label for="homeTeam">
-                        Home Team
+                        Hemmalag
                     </label>
-                    <input type="text" id="homeTeam" class="form-control" @bind="newGame.HomeTeam" placeholder="Enter home team name"/>
+                    <input type="text" id="homeTeam" class="form-control" @bind="newGame.Team1" placeholder="Enter home team name"/>
                 </div>
                 <!-- AWAY TEAM FIELD -->
                 <div class="form-group">
                     <label for="awayTeam">
-                        Away Team
+                        Bortalag
                     </label>
-                    <input type="text" id="awayTeam" class="form-control" @bind="newGame.AwayTeam" placeholder="Enter away team name"/>
+                    <input type="text" id="awayTeam" class="form-control" @bind="newGame.Team2" placeholder="Enter away team name"/>
                 </div>
             </div>
             <div class="modal-footer">

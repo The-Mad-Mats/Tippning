@@ -1,5 +1,6 @@
 ﻿using System.Net.Http.Json;
 using TipsWeb.Models;
+//using TipsWebApi.Models;
 using static System.Net.WebRequestMethods;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -98,5 +99,35 @@ namespace TipsWeb
                 throw new ApplicationException($"Error posting data to API: {ex.Message}");
             }
         }
+
+        public async Task<GameAdmin> AddGame(AddGameReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Admin/AddGame", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<GameAdmin>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+        public async Task<List<GameAdmin>> GetGames(GetGamesReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Admin/GetGames", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<GameAdmin>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+
     }
 }

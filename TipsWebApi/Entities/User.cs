@@ -10,6 +10,7 @@
         public string Token { get; set; } = "";
         public bool Admin { get; set; }
         public virtual ICollection<UserLeague>? UserLeagues { get; set; }
+        public virtual ICollection<UserGame>? UserGames{ get; set; }
 
     }
 }

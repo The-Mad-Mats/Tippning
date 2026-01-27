@@ -17,6 +17,18 @@ public class ApplicationDbContext : DbContext
             .WithMany(u => u.UserLeagues)
             .HasForeignKey(ul => ul.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<UserGame>()
+            .HasOne(ul => ul.Game)
+            .WithMany(l => l.UserGames)
+            .HasForeignKey(ul => ul.GameId)
+            .OnDelete(DeleteBehavior.Restrict); // or Cascade, depending on your needs
+
+        modelBuilder.Entity<UserGame>()
+            .HasOne(ul => ul.User)
+            .WithMany(u => u.UserGames)
+            .HasForeignKey(ul => ul.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -24,4 +36,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<UserLeague> UserLeagues { get; set; }
     public DbSet<League> Leagues { get; set; }
+    public DbSet<Game> Games { get; set; }
 }
