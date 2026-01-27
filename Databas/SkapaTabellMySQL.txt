@@ -1,0 +1,55 @@
+CREATE TABLE `game` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `DateTime` datetime NOT NULL,
+  `Team1` varchar(45) NOT NULL,
+  `Team2` varchar(45) NOT NULL,
+  `Team1Score` int DEFAULT NULL,
+  `Team2Score` int DEFAULT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `league` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Name` varchar(45) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `user` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `Username` varchar(45) NOT NULL,
+  `Password` varchar(45) NOT NULL,
+  `Team` varchar(45) NOT NULL,
+  `Points` int NOT NULL,
+  `Token` varchar(45) NOT NULL,
+  `Admin` bit(1) NOT NULL,
+  PRIMARY KEY (`Id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `usergame` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `UserId` int NOT NULL,
+  `GameId` int NOT NULL,
+  `Team1Score` int NOT NULL,
+  `Team2Score` int NOT NULL,
+  `Points` int NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `FK_UserGame_Games_idx` (`GameId`),
+  KEY `FK_UserGame_Users_idx` (`UserId`),
+  CONSTRAINT `FK_UserGame_Games` FOREIGN KEY (`GameId`) REFERENCES `game` (`Id`),
+  CONSTRAINT `FK_UserGame_Users` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+CREATE TABLE `userleague` (
+  `Id` int NOT NULL AUTO_INCREMENT,
+  `UserId` int NOT NULL,
+  `LeagueId` int NOT NULL,
+  PRIMARY KEY (`Id`),
+  KEY `FK_UserLeague_Leagues_idx` (`LeagueId`),
+  KEY `FK_UserLeague_Users_idx` (`UserId`),
+  CONSTRAINT `FK_UserLeague_Leagues` FOREIGN KEY (`LeagueId`) REFERENCES `league` (`Id`),
+  CONSTRAINT `FK_UserLeague_Users` FOREIGN KEY (`UserId`) REFERENCES `user` (`Id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
