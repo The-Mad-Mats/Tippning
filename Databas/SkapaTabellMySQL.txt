@@ -12,6 +12,7 @@ CREATE TABLE `game` (
 CREATE TABLE `league` (
   `Id` int NOT NULL AUTO_INCREMENT,
   `Name` varchar(45) NOT NULL,
+  `Password` varchar(45) NOT NULL,
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -24,6 +25,8 @@ CREATE TABLE `user` (
   `Points` int NOT NULL,
   `Token` varchar(45) NOT NULL,
   `Admin` bit(1) NOT NULL,
+  `LastLogin` datetime NULL,
+
   PRIMARY KEY (`Id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 

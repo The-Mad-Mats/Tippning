@@ -26,54 +26,6 @@ namespace TipsWeb.Pages
         private async Task LoadInitialGames()
         {
             games = await _proxy.GetGames(new GetGamesReq { UserId = AppState.CurrentUser.Id, Token = AppState.CurrentUser.Token });
-            //games = new List<GameAdmin>
-            //{
-            //    new()
-            //    {
-            //        Id = 1,
-            //        HomeTeam = "Football Match",
-            //        AwayTeam = "Sports",
-            //        HomeTeamScore = "",
-            //        AwayTeamScore    = "", 
-            //        IsSelected = false
-            //    },
-            //    new()
-            //    {
-            //        Id = 2,
-            //        HomeTeam = "Basketball Game",
-            //        AwayTeam = "Sports",
-            //        HomeTeamScore = "",
-            //        AwayTeamScore = "",
-            //        IsSelected = false
-            //    },
-            //    new()
-            //    {
-            //        Id = 3,
-            //        HomeTeam = "Chess Tournament",
-            //        AwayTeam = "Board Games",
-            //        HomeTeamScore = "",
-            //        AwayTeamScore = "",
-            //        IsSelected = false
-            //    },
-            //    new()
-            //    {   
-            //        Id = 4,
-            //        HomeTeam = "Tennis Match",
-            //        AwayTeam = "Sports",
-            //        HomeTeamScore = "",
-            //        AwayTeamScore = "",
-            //        IsSelected = false
-            //    },
-            //    new()
-            //    {
-            //        Id = 5,
-            //        HomeTeam = "Video Game Contest",
-            //        AwayTeam = "E-Sports",
-            //        HomeTeamScore = "",
-            //        AwayTeamScore = "",
-            //        IsSelected = false
-            //    }
-            //};
         }
         // ========================================
         // EVENT HANDLERS

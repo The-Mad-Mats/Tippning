@@ -3,11 +3,11 @@
 
 <div class="container">
     <div class="header">
-        <h2>Liga</h2>
+        <h2>Tabell</h2>
     </div>
 
     <div class="filter-section">
-        <label for="category">Filter by Category:</label>
+        <label for="category">Välj liga:</label>
         <select id="category" class="form-select" @bind="selectedLeague" @bind:after="OnCategoryChanged">
             @*<option value="">All Categories</option>*@
             @foreach (var category in Leagues)
@@ -56,9 +56,90 @@
                 </p>
             </div>
         }
+    <div class="button-container">
+        <button class="btn btn-primary" @onclick="JoinLeague">Gå med i liga</button>
+        <button class="btn btn-secondary" @onclick="CreateLeague">Skapa liga</button>
+    </div>
+
    @*  </div> *@
 </div>
+<!-- ========================================== -->
+<!-- POPUP MODAL -->
+<!-- ========================================== -->
+@if (showCreateLeague)
+{
+    <div class="modal-overlay" @onclick="ClosePopupCreate">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Skapa ny liga</h3>
+                <button class="btn-close" @onclick="ClosePopupCreate">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">
+                        Namn
+                    </label>
+                    <input type="text" id="name" class="form-control" @bind="newLeague.Name" />
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        Lösenord
+                    </label>
+                    <input type="text" id="password" class="form-control" @bind="newLeague.Password" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="ClosePopupCreate">
+                    Avbryt
+                </button>
+                <button class="btn btn-primary" @onclick="SaveLeague">
+                    Spara liga
+                </button>
+            </div>
+        </div>
+    </div>
+}
 
+<!-- ========================================== -->
+<!-- POPUP MODAL -->
+<!-- ========================================== -->
+@if (showJoinLeague)
+{
+    <div class="modal-overlay" @onclick="ClosePopupJoin">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Gå med i liga</h3>
+                <button class="btn-close" @onclick="ClosePopupJoin">
+                    ×
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">
+                        Namn
+                    </label>
+                    <input type="text" id="name" class="form-control" @bind="joinLeague.Name" />
+                </div>
+                <div class="form-group">
+                    <label for="password">
+                        Lösenord
+                    </label>
+                    <input type="text" id="password" class="form-control" @bind="joinLeague.Password" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="ClosePopupJoin">
+                    Avbryt
+                </button>
+                <button class="btn btn-primary" @onclick="SaveJoinLeague">
+                    Spara liga
+                </button>
+            </div>
+        </div>
+    </div>
+}
 
 
 <style>
@@ -189,4 +270,82 @@
         border-radius: 8px;
         color: #999;
     }
+    /* ===================================== */
+    /* MODAL OVERLAY */
+    /* ===================================== */
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        animation: fadeIn 0.2s ease-in-out;
+    }
+
+
+    /* ===================================== */
+    /* MODAL CONTENT */
+    /* ===================================== */
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease-out;
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #7f8c8d;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+
+        .btn-close:hover {
+            background: #f0f0f0;
+            color: #2c3e50;
+        }
+
+    .modal-body {
+        padding: 2rem 1.5rem;
+    }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
 </style>

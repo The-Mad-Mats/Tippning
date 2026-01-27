@@ -119,6 +119,34 @@ public class TipsController : ControllerBase
         }
     }
 
+    [HttpPost]
+    [Route("CreateLeague")]
+    public bool CreateLeague(CreateOrJoinLeageReq req)
+    {
+        try
+        {
+            var league = new Entities.League()
+            {
+                Name = req.LeagueName,
+                Password = req.LeaguePassword
+            };
+            _context.Leagues.Add(league);
+            _context.SaveChanges();
+            var userleague = new Entities.UserLeague()
+            {
+                UserId = req.UserId,
+                LeagueId = league.Id
+            };
+            _context.UserLeagues.Add(userleague);
+            _context.SaveChanges();
+            return true;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
+
     private bool CheckUser(int userId, string token)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);
