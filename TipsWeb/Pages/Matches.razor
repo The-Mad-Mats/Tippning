@@ -18,7 +18,7 @@
         <div class="card-body"> *@
         <div class="row align-items-left">
             <div class="col-md-2">
-                @item.DateTime.ToString("g")
+                @item.GameTime.ToString("g")
             </div>
             <div class="col-md-1">
                 <img src="@item.Team1Flag" alt="Item image" class="item-image rounded" />
@@ -34,11 +34,25 @@
                 @item.Team2
             </div>
             <div class="col-md-1">
-                <input type="text" class="form-control" @bind="item.Team1Score" />
+                @if(item.IsEditable)
+                {
+                    <input type="text" class="form-control" @bind="item.Team1Score" />
+                }
+                else
+                {
+                    <input type="text" class="form-control" @bind="item.Team1Score" readonly/>
+                }
             </div>
             -
             <div class="col-md-1">
-                <input type="text" class="form-control" @bind="item.Team2Score" />
+                @if (item.IsEditable)
+                {
+                    <input type="text" class="form-control" @bind="item.Team2Score" />
+                }
+                else
+                {
+                    <input type="text" class="form-control" @bind="item.Team2Score" readonly />
+                }
             </div>
         </div>
        @*  </div>

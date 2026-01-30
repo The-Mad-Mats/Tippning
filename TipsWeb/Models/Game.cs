@@ -3,7 +3,7 @@
     public class Game
     {
         public int Id { get; set; }
-        public DateTime DateTime { get; set; } = DateTime.MinValue;
+        public DateTime GameTime { get; set; } = DateTime.MinValue;
         public string Team1Flag { get; set; } = "";
         public string Team1 { get; set; } = "";
         public string Team2Flag { get; set; } = "";
@@ -13,6 +13,12 @@
         public int? Team1Result { get; set; }
         public int? Team2Result { get; set; }
         public int? Points { get; set; }
-
+        public bool IsEditable 
+        { 
+            get
+            { 
+                return GameTime > DateTime.Now; 
+            } 
+        }
     }
 }

@@ -31,7 +31,7 @@ public class AdminController : ControllerBase
             {
                 var game = new Entities.Game()
                 {
-                    DateTime = req.Date,
+                    GameTime = req.Date,
                     Team1 = req.HomeTeam,
                     Team2 = req.AwayTeam,
                     Team1Score = null,
@@ -43,7 +43,7 @@ public class AdminController : ControllerBase
                 var newGame = new Models.Game()
                 {
                     Id = addedGame.Id,
-                    DateTime = addedGame.DateTime,
+                    GameTime = addedGame.GameTime,
                     Team1 = addedGame.Team1,
                     Team2 = addedGame.Team2,
                     Team1Score = addedGame.Team1Score,
@@ -73,7 +73,7 @@ public class AdminController : ControllerBase
                 games = _context.Games.AsNoTracking().Select(g => new Models.Game()
                 {
                     Id = g.Id,
-                    DateTime = g.DateTime,
+                    GameTime = g.GameTime,
                     Team1 = g.Team1,
                     Team2 = g.Team2,
                     Team1Score = g.Team1Score,

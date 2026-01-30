@@ -86,7 +86,7 @@ public class TipsController : ControllerBase
                 games.Add(new Models.Game
                 {
                     Id = game.Id,
-                    DateTime = game.DateTime,
+                    GameTime = game.GameTime,
                     Team1 = game.Team1,
                     Team2 = game.Team2,
                     Team1Flag = $"images/{game  .Team1}.png",
