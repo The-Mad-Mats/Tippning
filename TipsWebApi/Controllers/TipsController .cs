@@ -43,7 +43,7 @@ public class TipsController : ControllerBase
     
     [HttpPost]
     [Route("GetUserLeagues")]
-    public List<Models.League> GetUserLeagues(GetUserLeagueReq req)
+    public List<Models.League> GetUserLeagues(GetDefaultReq req)
     {
         if (CheckUser(req.UserId,req.Token))
         {
@@ -64,6 +64,40 @@ public class TipsController : ControllerBase
             return leagues;
         }
         return new List<Models.League>();
+    }
+
+    [HttpPost]
+    [Route("GetUserGames")]
+    public List<Models.Game> GetUserGames(GetDefaultReq req)
+    {
+        if (CheckUser(req.UserId, req.Token))
+        {
+            var games = new List<Models.Game>();
+            var allGames = _context.Games;
+            var myGames = _context.UserGames.Where(x => x.UserId == req.UserId).ToList();
+            foreach (var myGame in myGames)
+            {
+                allGames.Single(x => x.Id == myGame.GameId).UserGames!.Add(myGame);
+            }
+            foreach (var game in allGames)
+            {
+                games.Add(new Models.Game
+                {
+                    Id = game.Id,
+                    DateTime = game.DateTime,
+                    Team1 = game.Team1,
+                    Team2 = game.Team2,
+                    Team1Flag = $"images/{game  .Team1}.png",
+                    Team2Flag = $"images/{game.Team2}.png",
+                    Team1Result = game.Team1Score,
+                    Team2Result = game.Team2Score,
+                    Team1Score = game.UserGames?.FirstOrDefault(x => x.GameId == game.Id)?.Team1Score,
+                    Team2Score = game.UserGames?.FirstOrDefault(x => x.GameId == game.Id)?.Team2Score,
+                });
+            }
+            return games;
+        }
+        return new List<Models.Game>();
     }
 
     [HttpPost]

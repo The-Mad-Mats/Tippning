@@ -10,5 +10,9 @@
         public string Team2 { get; set; } = "";
         public int? Team1Score { get; set; }
         public int? Team2Score { get; set; }
+        public int? Team1Result { get; set; }
+        public int? Team2Result { get; set; }
+        public int? Points { get; set; }
+
     }
 }

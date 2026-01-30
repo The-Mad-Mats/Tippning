@@ -71,13 +71,27 @@ namespace TipsWeb
                 throw new ApplicationException($"Error posting data to API: {ex.Message}");
             }
         }
-        public async Task<List<League>> GetUserleague(GetUserLeagueReq content)
+        public async Task<List<League>> GetUserleague(GetDefaultReq content)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("Tips/GetUserLeagues", content);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<List<League>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+        public async Task<List<Game>> GetUserGames(GetDefaultReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Tips/GetUserGames", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<Game>>();
             }
             catch (Exception ex)
             {

@@ -1,6 +1,6 @@
-﻿namespace TipsWebApi.Models
+﻿namespace TipsWeb.Models
 {
-    public class GetUserLeagueReq
+    public class GetDefaultReq
     {
         public int UserId { get; set; }
         public string Token { get; set; } = "";

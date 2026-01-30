@@ -21,7 +21,7 @@ namespace TipsWeb.Pages
             user = AppState.CurrentUser;
             if (user != null)
             {
-                Leagues = await Proxy.GetUserleague(new GetUserLeagueReq { UserId = user.Id, Token = user.Token });
+                Leagues = await Proxy.GetUserleague(new GetDefaultReq { UserId = user.Id, Token = user.Token });
                 selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
                 await OnCategoryChanged();
             }
