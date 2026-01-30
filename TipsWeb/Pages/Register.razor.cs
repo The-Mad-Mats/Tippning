@@ -7,7 +7,7 @@ namespace TipsWeb.Pages
         // ========================================
         // FIELDS
         // ========================================
-        [Inject] public Proxy _proxy { get; set; }
+        [Inject] public Proxy Proxy { get; set; }
         public UserModel userModel = new ();
         private List<UserModel> addedUsers = new();
         private string successMessage = string.Empty;
@@ -39,7 +39,7 @@ namespace TipsWeb.Pages
                     Password = userModel.Password,
                     Team = userModel.Team
                 };
-                var status = await _proxy.CreateUser(createUserReq);
+                var status = await Proxy.CreateUser(createUserReq);
                 if (status)
                 {
                     // Add user to list

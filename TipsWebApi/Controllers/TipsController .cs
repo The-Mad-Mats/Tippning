@@ -125,21 +125,26 @@ public class TipsController : ControllerBase
     {
         try
         {
-            var league = new Entities.League()
+            if (CheckUser(req.UserId, req.Token))
             {
-                Name = req.LeagueName,
-                Password = req.LeaguePassword
-            };
-            _context.Leagues.Add(league);
-            _context.SaveChanges();
-            var userleague = new Entities.UserLeague()
-            {
-                UserId = req.UserId,
-                LeagueId = league.Id
-            };
-            _context.UserLeagues.Add(userleague);
-            _context.SaveChanges();
-            return true;
+
+                var league = new Entities.League()
+                {
+                    Name = req.LeagueName,
+                    Password = req.LeaguePassword
+                };
+                _context.Leagues.Add(league);
+                _context.SaveChanges();
+                var userleague = new Entities.UserLeague()
+                {
+                    UserId = req.UserId,
+                    LeagueId = league.Id
+                };
+                _context.UserLeagues.Add(userleague);
+                _context.SaveChanges();
+                return true;
+            }
+            return false;
         }
         catch (Exception)
         {
@@ -147,6 +152,36 @@ public class TipsController : ControllerBase
         }
     }
 
+    [HttpPost]
+    [Route("JoinLeague")]
+    public bool JoinLeague(CreateOrJoinLeageReq req)
+    {
+        try
+        {
+            if (CheckUser(req.UserId, req.Token))
+            {
+
+                var league = _context.Leagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword);
+                if (league != null)
+                {
+                    var userleague = new Entities.UserLeague
+                    {
+                        LeagueId = league.Id,
+                        UserId = req.UserId
+                    };
+                    _context.UserLeagues.Add(userleague);
+                    _context.SaveChanges();
+                    return true;
+                }
+                return true;
+            }
+            return false;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
     private bool CheckUser(int userId, string token)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);

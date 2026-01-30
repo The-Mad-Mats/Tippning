@@ -6,7 +6,7 @@ namespace TipsWeb.Pages
 {
     public partial class Login
     {
-        [Inject] public Proxy _proxy { get; set; }
+        [Inject] public Proxy Proxy { get; set; }
         [Inject] public NavigationManager NavigationManager { get; set; }
 
         private LoginModel loginModel = new ();
@@ -26,7 +26,7 @@ namespace TipsWeb.Pages
                     Username = loginModel.Email,
                     Password = loginModel.Password
                 };
-                var user = await _proxy.Login(loginReq);
+                var user = await Proxy.Login(loginReq);
 
                 if (user.Id != 0)
                 {

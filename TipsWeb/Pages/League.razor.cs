@@ -5,7 +5,7 @@ namespace TipsWeb.Pages
 {
     public partial class League
     {
-        [Inject] public Proxy _proxy { get; set; }
+        [Inject] public Proxy Proxy { get; set; }
         private List<LeagueRow> products = new();
         private List<Models.LeagueRow> LeagueRows = new();
         private List<Models.League> Leagues = new List<Models.League> { };
@@ -21,7 +21,7 @@ namespace TipsWeb.Pages
             user = AppState.CurrentUser;
             if (user != null)
             {
-                Leagues = await _proxy.GetUserleague(new GetUserLeagueReq { UserId = user.Id, Token = user.Token });
+                Leagues = await Proxy.GetUserleague(new GetUserLeagueReq { UserId = user.Id, Token = user.Token });
                 selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
                 await OnCategoryChanged();
             }
@@ -35,7 +35,7 @@ namespace TipsWeb.Pages
             else
             {
                 var leagueId = Leagues.FirstOrDefault(l => l.Id == selectedLeague)?.Id ?? 0;
-                LeagueRows = await _proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token });
+                LeagueRows = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token });
             }
         }
 
@@ -74,7 +74,7 @@ namespace TipsWeb.Pages
                 LeagueName = newLeague.Name,
                 LeaguePassword = newLeague.Password
             };
-            await _proxy.CreateLeague(league);
+            await Proxy.CreateLeague(league);
             ClosePopupCreate();
         }
         // ========================================
@@ -83,16 +83,16 @@ namespace TipsWeb.Pages
         private void OpenPopupJoin()
         {
             newLeague = new Models.League();
-            showCreateLeague = true;
+            showJoinLeague = true;
         }
         private void ClosePopupJoin()
         {
-            showCreateLeague = false;
-            newLeague = new Models.League();
+            showJoinLeague = false;
+            joinLeague = new Models.League();
         }
         private async Task SaveJoinLeague()
         {
-            if (string.IsNullOrWhiteSpace(newLeague.Name) || string.IsNullOrWhiteSpace(newLeague.Password))
+            if (string.IsNullOrWhiteSpace(joinLeague.Name) || string.IsNullOrWhiteSpace(joinLeague.Password))
             {
                 // You can add validation message here
                 return;
@@ -104,8 +104,8 @@ namespace TipsWeb.Pages
                 LeagueName = joinLeague.Name,
                 LeaguePassword = joinLeague.Password
             };
-            //await _proxy.AddGame(game);
-            ClosePopupCreate();
+            await Proxy.JoinLeague(league);
+            ClosePopupJoin();
         }
     }
 }
