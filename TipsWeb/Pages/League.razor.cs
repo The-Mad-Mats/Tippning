@@ -6,7 +6,6 @@ namespace TipsWeb.Pages
     public partial class League
     {
         [Inject] public Proxy Proxy { get; set; }
-        private List<LeagueRow> products = new();
         private List<Models.LeagueRow> LeagueRows = new();
         private List<Models.League> Leagues = new List<Models.League> { };
         private int selectedLeague = 0;

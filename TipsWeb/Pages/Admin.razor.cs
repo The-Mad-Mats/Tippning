@@ -9,6 +9,7 @@ namespace TipsWeb.Pages
         // FIELDS
         // ========================================
         [Inject] public Proxy _proxy { get; set; }
+        private User user = new();
         private List <GameAdmin> games = new();
         private string calculationResult = string.Empty;
         private bool showPopup = false;
@@ -18,6 +19,8 @@ namespace TipsWeb.Pages
         // ========================================
         protected override async Task OnInitializedAsync()
         {
+            user = AppState.CurrentUser;
+
             await LoadInitialGames();
         }
         // ========================================
@@ -25,7 +28,10 @@ namespace TipsWeb.Pages
         // ========================================
         private async Task LoadInitialGames()
         {
-            games = await _proxy.GetGames(new GetGamesReq { UserId = AppState.CurrentUser.Id, Token = AppState.CurrentUser.Token });
+            if (user != null)
+            {
+                games = await _proxy.GetGames(new GetGamesReq { UserId = user.Id, Token = user.Token });
+            }
         }
         // ========================================
         // EVENT HANDLERS

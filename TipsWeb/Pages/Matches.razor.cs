@@ -1,47 +1,74 @@
-﻿using TipsWeb.Models;
+﻿using Microsoft.AspNetCore.Components;
+using TipsWeb.Models;
 
 namespace TipsWeb.Pages
 {
     public partial class Matches
     {
-        private List<GameUser> Items { get; set; } = new();
+        [Inject] public Proxy Proxy { get; set; }
+        private User user = new();
 
-        protected override void OnInitialized()
+        private List<Game> Games { get; set; } = new();
+
+        protected override async Task OnInitializedAsync()
         {
-            Items.Add(new GameUser
+            user = AppState.CurrentUser;
+            if (user != null)
             {
-                DateTime = DateTime.Now.AddHours(1),
-                Team1Flag = "images/sweden.png",
-                Team1 = "Sverige",
-                Team2Flag = "images/ukraina.png",
-                Team2 = "Ukraina",
-                Team1Score = 0,
-                Team2Score = 0
-            });
+                Games = await Proxy.GetUserGames(new GetDefaultReq { UserId = user.Id, Token = user.Token });
+            }
 
-            Items.Add(new GameUser
-            {
-                DateTime = DateTime.Now.AddDays(1),
-                Team1Flag = "images/polen.png",
-                Team1 = "Polen",
-                Team2Flag = "images/albanien.png",
-                Team2 = "Albanien",
-                Team1Score = 0,
-                Team2Score = 0
-            });
+            //Items.Add(new GameUser
+            //{
+            //    DateTime = DateTime.Now.AddHours(1),
+            //    Team1Flag = "images/sweden.png",
+            //    Team1 = "Sverige",
+            //    Team2Flag = "images/ukraina.png",
+            //    Team2 = "Ukraina",
+            //    Team1Score = 0,
+            //    Team2Score = 0
+            //});
+
+            //Items.Add(new GameUser
+            //{
+            //    DateTime = DateTime.Now.AddDays(1),
+            //    Team1Flag = "images/polen.png",
+            //    Team1 = "Polen",
+            //    Team2Flag = "images/albanien.png",
+            //    Team2 = "Albanien",
+            //    Team1Score = 0,
+            //    Team2Score = 0
+            //});
         }
 
         private void Spara()
         {
-            Items.Add(new GameUser
+            var saveGamesReq = new SaveGamesReq
             {
-                Team1Flag = "images/default.png",
-                Team1 = $"Item {Items.Count + 1}",
-                Team2Flag = "images/default.png",
-                Team2 = "New item",
-                Team1Score = 0,
-                Team2Score = 0
-            });
+                UserId = user.Id,
+                Token = user.Token,
+                Games = new List<SaveGame>()
+            };
+            foreach(var game in Games)
+            {
+                var gameResult = new SaveGame
+                {
+                    GameId = game.Id,
+                    Team1Score = game.Team1Score,
+                    Team2Score = game.Team2Score
+                };
+                saveGamesReq.Games.Add(gameResult);
+            }
+            Proxy.SaveGames(saveGamesReq);
+            //Items.Add(new GameUser
+            //{
+            //    Team1Flag = "images/default.png",
+            //    Team1 = $"Item {Items.Count + 1}",
+            //    Team2Flag = "images/default.png",
+            //    Team2 = "New item",
+            //    Team1Score = 0,
+            //    Team2Score = 0
+            //});
         }
 
         //public class ItemModel

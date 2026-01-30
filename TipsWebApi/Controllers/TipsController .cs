@@ -36,6 +36,8 @@ public class TipsController : ControllerBase
                 Token = user.Token,
                 Admin = user.Admin,
             };
+            user.LastLogin = DateTime.Now;
+            _context.SaveChanges();
             return userDto;
         }
         return new Models.User();
@@ -128,6 +130,45 @@ public class TipsController : ControllerBase
         return new List<Models.LeagueRow>();
     }
 
+    [HttpPost]
+    [Route("SaveGames")]
+    public bool SaveGames(SaveGamesReq req)
+    {
+        if (CheckUser(req.UserId, req.Token))
+        {
+            try
+            {
+                foreach (var gameReq in req.Games)
+                {
+                    var userGame = _context.UserGames.FirstOrDefault(x => x.UserId == req.UserId && x.GameId == gameReq.GameId);
+                    if (userGame != null)
+                    {
+                        userGame.Team1Score = gameReq.Team1Score;
+                        userGame.Team2Score = gameReq.Team2Score;
+                    }
+                    else
+                    {
+                        userGame = new Entities.UserGame()
+                        {
+                            UserId = req.UserId,
+                            GameId = gameReq.GameId,
+                            Team1Score = gameReq.Team1Score,
+                            Team2Score = gameReq.Team2Score,
+                            Points = 0
+                        };
+                        _context.UserGames.Add(userGame);
+                    }
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        return false;
+    }
     [HttpPost]
     [Route("CreateUser")]
     public bool CreateUser(CreateUserReq req)

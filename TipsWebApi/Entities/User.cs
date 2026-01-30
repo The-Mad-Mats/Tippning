@@ -14,6 +14,7 @@ namespace TipsWebApi.Entities
         public int Points { get; set; }
         public string Token { get; set; } = "";
         public bool Admin { get; set; }
+        public DateTime? LastLogin { get; set; } = DateTime.MinValue;
         public virtual ICollection<UserLeague>? UserLeagues { get; set; }
         public virtual ICollection<UserGame>? UserGames{ get; set; }
 
