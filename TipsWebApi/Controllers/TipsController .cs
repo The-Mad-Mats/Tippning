@@ -111,7 +111,7 @@ public class TipsController : ControllerBase
             var leagues = new List<Models.LeagueRow>();
             var userleagues = _context.UserLeagues.Include(y => y.User).Where(x => x.LeagueId == req.LeagueId).ToList();
             var position = 1;
-            foreach (var ul in userleagues.OrderBy(x => x.User.Points))
+            foreach (var ul in userleagues.OrderByDescending(x => x.User.Points))
             {
                 if (ul.User != null)
                 {

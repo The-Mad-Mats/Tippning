@@ -91,6 +91,65 @@ public class AdminController : ControllerBase
         return new List<Models.Game>();
     }
 
+    [HttpPost]
+    [Route("CalculateResult")]
+    public bool CalculateResult(CalcResultReq req)
+    {
+        if (CheckUser(req.UserId, req.Token))
+        {
+            try
+            {
+                foreach (var gameReq in req.Games)
+                {
+                    var game = _context.Games.Include(y => y.UserGames).FirstOrDefault(x => x.Id == gameReq.Id);
+                    if (game != null)
+                    {
+                        game.Team1Score = gameReq.Team1Score;
+                        game.Team2Score = gameReq.Team2Score;
+                        if (game.UserGames != null)
+                        {
+                            foreach (var userGame in game.UserGames)
+                            {
+                                int points = 0;
+                                if (userGame.Team1Score == gameReq.Team1Score)
+                                {
+                                    points += 1; // Team1 correct score
+                                }
+                                if (userGame.Team2Score == gameReq.Team2Score)
+                                {
+                                    points += 1; //Team2 correct score
+                                }
+                                if ((userGame.Team1Score - userGame.Team2Score) == (gameReq.Team1Score - gameReq.Team2Score))
+                                {
+                                    points += 1; // Correct goal difference
+                                }
+                                if ((userGame.Team1Score > userGame.Team2Score && gameReq.Team1Score > gameReq.Team2Score) ||
+                                         (userGame.Team1Score < userGame.Team2Score && gameReq.Team1Score < gameReq.Team2Score) ||
+                                         (userGame.Team1Score == userGame.Team2Score && gameReq.Team1Score == gameReq.Team2Score))
+                                {
+                                    points += 1; // Correct outcome
+                                }
+                                if (points == 4)
+                                {
+                                    points += 2; // Bonus for perfect tip
+                                }
+                                userGame.Points = points;
+                                userGame.User.Points += points;
+                            }
+                        }
+                    }
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
     private bool CheckUser(int userId, string token)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);

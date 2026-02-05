@@ -36,21 +36,21 @@ namespace TipsWeb.Pages
         // ========================================
         // EVENT HANDLERS
         // ========================================
-        private void DoCalculation()
+        private async Task DoCalculation()
         {
-            var selectedGames = games.Where(g => g.IsSelected).ToList();
+            var selectedGames = games.Where(x => x.Team1Score != null && x.Team2Score != null).ToList();
             if(!selectedGames.Any())
             {
                 calculationResult = "No games selected!";
                 return;
             }
-            // Example calculation: count selected games and sum scores
-            int totalScore = 0;
-            foreach(var game in selectedGames)
+            var calcResultReq = new CalcResultReq
             {
-                totalScore += game.Team1Score ?? 0;
-            }
-            calculationResult = $"Selected {selectedGames.Count} game(s).Total Score: {totalScore}";
+                UserId = user.Id,
+                Token = user.Token,
+                Games = selectedGames
+            };
+            await _proxy.CalculateResul(calcResultReq);
         }
         private void AddGames()
         { 
