@@ -104,30 +104,62 @@ public class TipsController : ControllerBase
 
     [HttpPost]
     [Route("GetLeague")]
-    public List<Models.LeagueRow> GetLeague(GetLeagueReq req)
+    public LeagueResult GetLeague(GetLeagueReq req)
     {
         if (CheckUser(req.UserId, req.Token))
         {
-            var leagues = new List<Models.LeagueRow>();
+            var leagueMembers = new List<int>();
+            var leagueResult = new LeagueResult();
+            leagueResult.Rows = new List<LeagueRow>();
             var userleagues = _context.UserLeagues.Include(y => y.User).Where(x => x.LeagueId == req.LeagueId).ToList();
+            leagueMembers = userleagues.Select(x => x.UserId).ToList();
             var position = 1;
             foreach (var ul in userleagues.OrderByDescending(x => x.User.Points))
             {
                 if (ul.User != null)
                 {
-                    var leagueDto = new Models.LeagueRow
+                    var leagueDto = new LeagueRow
                     {
                         Position = position++,
                         UserName = ul.User.UserName,
                         Team = ul.User.Team,
                         Points = ul.User.Points
                     };
-                    leagues.Add(leagueDto);
+                    leagueResult.Rows.Add(leagueDto);
                 }
             }
-            return leagues;
+            leagueResult.Matches = new List<Match>();
+            var games = _context.Games.Include(x => x.UserGames).ThenInclude(y => y.User).ToList();
+            foreach (var game in games.Where(x => x.GameTime < DateTime.Now))
+            {
+                var match = new Match
+                {
+                    GameTime = game.GameTime,
+                    Team1 = game.Team1,
+                    Team2 = game.Team2,
+                    Team1Flag = $"images/{game.Team1}.png",
+                    Team2Flag = $"images/{game.Team2}.png",
+                    Team1Score = game.Team1Score,
+                    Team2Score = game.Team2Score,
+                    UserMatches = new List<UserMatch>()
+                };
+                foreach (var userGame in game.UserGames.Where(x => leagueMembers.Contains(x.UserId)))
+                {
+                    var userMatch = new UserMatch
+                    {
+                        Team = userGame.User.Team,
+                        Owner = userGame.User.UserName,
+                        Team1Score = userGame.Team1Score,
+                        Team2Score = userGame.Team2Score,
+                        Points = userGame.Points,
+                    };
+                    match.UserMatches.Add(userMatch);
+                }
+                leagueResult.Matches.Add(match);
+            }
+            return leagueResult;
         }
-        return new List<Models.LeagueRow>();
+        return new LeagueResult();
     }
 
     [HttpPost]

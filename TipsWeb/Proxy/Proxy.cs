@@ -113,13 +113,13 @@ namespace TipsWeb
                 throw new ApplicationException($"Error posting data to API: {ex.Message}");
             }
         }
-        public async Task<List<LeagueRow>> GetLeague(GetLeagueReq content)
+        public async Task<LeagueResult> GetLeague(GetLeagueReq content)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("Tips/GetLeague", content);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<LeagueRow>>();
+                return await response.Content.ReadFromJsonAsync<LeagueResult>();
             }
             catch (Exception ex)
             {

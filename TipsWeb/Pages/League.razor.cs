@@ -6,7 +6,7 @@ namespace TipsWeb.Pages
     public partial class League
     {
         [Inject] public Proxy Proxy { get; set; }
-        private List<Models.LeagueRow> LeagueRows = new();
+        private LeagueResult LeagueResult = new();
         private List<Models.League> Leagues = new List<Models.League> { };
         private int selectedLeague = 0;
         private User user = new();
@@ -29,12 +29,13 @@ namespace TipsWeb.Pages
         {
             if (selectedLeague == 0)
             {
-                LeagueRows = new List<LeagueRow>();
+                LeagueResult.Rows = new List<LeagueRow>();
+                LeagueResult.Matches = new List<Match>();
             }
             else
             {
                 var leagueId = Leagues.FirstOrDefault(l => l.Id == selectedLeague)?.Id ?? 0;
-                LeagueRows = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token });
+                LeagueResult = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token });
             }
         }
 
