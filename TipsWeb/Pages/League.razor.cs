@@ -27,16 +27,16 @@ namespace TipsWeb.Pages
         }
         private async Task OnCategoryChanged()
         {
-            if (selectedLeague == 0)
-            {
-                LeagueResult.Rows = new List<LeagueRow>();
-                LeagueResult.Matches = new List<Match>();
-            }
-            else
-            {
+            //if (selectedLeague == 0)
+            //{
+            //    LeagueResult.Rows = new List<LeagueRow>();
+            //    LeagueResult.Matches = new List<Match>();
+            //}
+            //else
+            //{
                 var leagueId = Leagues.FirstOrDefault(l => l.Id == selectedLeague)?.Id ?? 0;
                 LeagueResult = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token });
-            }
+            //}
         }
 
         private async Task JoinLeague()

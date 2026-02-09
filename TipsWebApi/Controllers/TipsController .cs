@@ -63,6 +63,12 @@ public class TipsController : ControllerBase
                     leagues.Add(leagueDto);
                 }
             }
+            var worldLeagueDto = new Models.League
+            {
+                Id = 0,
+                Name = "Världen",
+            };
+            leagues.Add(worldLeagueDto);
             return leagues;
         }
         return new List<Models.League>();
@@ -111,51 +117,84 @@ public class TipsController : ControllerBase
             var leagueMembers = new List<int>();
             var leagueResult = new LeagueResult();
             leagueResult.Rows = new List<LeagueRow>();
-            var userleagues = _context.UserLeagues.Include(y => y.User).Where(x => x.LeagueId == req.LeagueId).ToList();
-            leagueMembers = userleagues.Select(x => x.UserId).ToList();
-            var position = 1;
-            foreach (var ul in userleagues.OrderByDescending(x => x.User.Points))
+            if (req.LeagueId == 0)
             {
-                if (ul.User != null)
+                //LeaguId 0 är världsligan. Hämta de 10 bästa spelarna i världen och deras poäng, samt den aktuella användarens position och poäng
+                var users = _context.Users.ToList();
+                var position = 1;
+                foreach (var user in users.OrderByDescending(x => x.Points).Take(10))
                 {
                     var leagueDto = new LeagueRow
                     {
                         Position = position++,
-                        UserName = ul.User.UserName,
-                        Team = ul.User.Team,
-                        Points = ul.User.Points
+                        UserName = user.UserName,
+                        Team = user.Team,
+                        Points = user.Points
                     };
                     leagueResult.Rows.Add(leagueDto);
+                    leagueMembers.Add(user.Id);
+                }
+                if(leagueMembers.Contains(req.UserId) == false)
+                {
+                    //Aktuell användare är inte i topp 10, hämta dennes position och lägg till i resultatet
+                    var index = users.FindIndex(x => x.Id == req.UserId);
+                    var leagueDto = new LeagueRow
+                    {
+                        Position = index++,
+                        UserName = users.First(x => x.Id == req.UserId).UserName,
+                        Team = users.First(x => x.Id == req.UserId).Team,
+                        Points = users.First(x => x.Id == req.UserId).Points
+                    };
                 }
             }
-            leagueResult.Matches = new List<Match>();
-            var games = _context.Games.Include(x => x.UserGames).ThenInclude(y => y.User).ToList();
-            foreach (var game in games.Where(x => x.GameTime < DateTime.Now))
+            else
             {
-                var match = new Match
+                var userleagues = _context.UserLeagues.Include(y => y.User).Where(x => x.LeagueId == req.LeagueId).ToList();
+                leagueMembers = userleagues.Select(x => x.UserId).ToList();
+                var position = 1;
+                foreach (var ul in userleagues.OrderByDescending(x => x.User.Points))
                 {
-                    GameTime = game.GameTime,
-                    Team1 = game.Team1,
-                    Team2 = game.Team2,
-                    Team1Flag = $"images/{game.Team1}.png",
-                    Team2Flag = $"images/{game.Team2}.png",
-                    Team1Score = game.Team1Score,
-                    Team2Score = game.Team2Score,
-                    UserMatches = new List<UserMatch>()
-                };
-                foreach (var userGame in game.UserGames.Where(x => leagueMembers.Contains(x.UserId)))
-                {
-                    var userMatch = new UserMatch
+                    if (ul.User != null)
                     {
-                        Team = userGame.User.Team,
-                        Owner = userGame.User.UserName,
-                        Team1Score = userGame.Team1Score,
-                        Team2Score = userGame.Team2Score,
-                        Points = userGame.Points,
-                    };
-                    match.UserMatches.Add(userMatch);
+                        var leagueDto = new LeagueRow
+                        {
+                            Position = position++,
+                            UserName = ul.User.UserName,
+                            Team = ul.User.Team,
+                            Points = ul.User.Points
+                        };
+                        leagueResult.Rows.Add(leagueDto);
+                    }
                 }
-                leagueResult.Matches.Add(match);
+                leagueResult.Matches = new List<Match>();
+                var games = _context.Games.Include(x => x.UserGames).ThenInclude(y => y.User).ToList();
+                foreach (var game in games.Where(x => x.GameTime < DateTime.Now))
+                {
+                    var match = new Match
+                    {
+                        GameTime = game.GameTime,
+                        Team1 = game.Team1,
+                        Team2 = game.Team2,
+                        Team1Flag = $"images/{game.Team1}.png",
+                        Team2Flag = $"images/{game.Team2}.png",
+                        Team1Score = game.Team1Score,
+                        Team2Score = game.Team2Score,
+                        UserMatches = new List<UserMatch>()
+                    };
+                    foreach (var userGame in game.UserGames.Where(x => leagueMembers.Contains(x.UserId)))
+                    {
+                        var userMatch = new UserMatch
+                        {
+                            Team = userGame.User.Team,
+                            Owner = userGame.User.UserName,
+                            Team1Score = userGame.Team1Score,
+                            Team2Score = userGame.Team2Score,
+                            Points = userGame.Points,
+                        };
+                        match.UserMatches.Add(userMatch);
+                    }
+                    leagueResult.Matches.Add(match);
+                }
             }
             return leagueResult;
         }

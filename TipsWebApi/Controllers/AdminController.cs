@@ -104,6 +104,25 @@ public class AdminController : ControllerBase
                     var game = _context.Games.Include(y => y.UserGames).FirstOrDefault(x => x.Id == gameReq.Id);
                     if (game != null)
                     {
+                        if(game.Team1Score == gameReq.Team1Score && game.Team2Score == gameReq.Team2Score)
+                        {
+                            continue; // No change in result, skip calculation
+                        }
+                        if(game.Team1Score != null && game.Team2Score != null)
+                        {
+                            // Resultatet har ändrats, återställ poäng för alla användare som tippat på detta spel
+                            if (game.UserGames != null)
+                            {
+                                foreach (var userGame in game.UserGames)
+                                {
+                                    if (userGame.Points != null)
+                                    {
+                                        userGame.User.Points -= userGame.Points.Value;
+                                        userGame.Points = 0; // Reset points before recalculation
+                                    }
+                                }
+                            }
+                        }
                         game.Team1Score = gameReq.Team1Score;
                         game.Team2Score = gameReq.Team2Score;
                         if (game.UserGames != null)
