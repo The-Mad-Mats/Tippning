@@ -1,0 +1,6 @@
+Kontrollera om användare redan finns
+Ta bort onödiga länkar på login sidan
+Varna för säkerhet på skapa användare sidan
+Översätt
+Hindra tips om man haft tips sidan öppen när matchen startas
+Städa upp i koden
