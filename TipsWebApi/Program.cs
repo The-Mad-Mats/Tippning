@@ -10,10 +10,18 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
+    //options.AddPolicy("AllowSpecificOrigins",
+    //    policy =>
+    //    {
+    //        policy.WithOrigins("https://localhost:44350")
+    //            .AllowAnyHeader()
+    //            .AllowAnyMethod()
+    //            .AllowCredentials();
+    //    });
     options.AddPolicy("AllowSpecificOrigins",
         policy =>
         {
-            policy.WithOrigins("https://localhost:44350")
+            policy.WithOrigins("https://betbuddies.se")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -31,11 +39,11 @@ var app = builder.Build();
 app.UseCors("AllowSpecificOrigins");
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//if (app.Environment.IsDevelopment())
+//{
+app.UseSwagger();
+app.UseSwaggerUI();
+//}
 
 app.UseHttpsRedirection();
 

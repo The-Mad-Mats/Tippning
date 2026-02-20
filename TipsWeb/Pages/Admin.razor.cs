@@ -74,7 +74,7 @@ namespace TipsWeb.Pages
         {
             newGame = new GameAdmin
             {
-                DateTime = DateTime.Today.AddHours(15),
+                GameTime = DateTime.Today.AddHours(15),
             };
             showPopup = true;
         }
@@ -94,7 +94,7 @@ namespace TipsWeb.Pages
             {
                 UserId = AppState.CurrentUser?.Id ?? 0,
                 Token = AppState.CurrentUser?.Token ?? "",
-                Date = newGame.DateTime,
+                Date = newGame.GameTime,
                 HomeTeam = newGame.Team1,
                 AwayTeam = newGame.Team2
             };

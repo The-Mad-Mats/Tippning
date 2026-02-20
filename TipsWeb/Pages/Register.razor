@@ -3,31 +3,28 @@
 <div class="form-container">
     <div class="form-card">
         <div class="form-header">
-            <h2>Add New User</h2>
-            <p>Fill in the details below to create a new user account</p>
+            <h2>Skapa användare</h2>
+            <p>OBS Den här sidan är väldigt osäker. Använda inte samma lösenord som någon annanstans. Om du glömmer ditt ösenord finns inget sätt att få tillbaka det</p>
         </div>
         <EditForm Model="@userModel" OnValidSubmit="HandleSubmit">
             <div class="form-group">
-                <label for="username">Username</label>
+                <label for="username">Användarnamn</label>
                 <InputText id="username" 
                            class="form-control" 
-                           @bind-Value="userModel.Username" 
-                           placeholder="Enter username" />
+                           @bind-Value="userModel.Username"/>
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password">Lösenord</label>
                 <InputText id="password" 
                            type="password" 
                            class="form-control" 
-                           @bind-Value="userModel.Password" 
-                           placeholder="Enter password" />
+                           @bind-Value="userModel.Password"/>
             </div>
             <div class="form-group">
-                <label for="team">Team</label>
+                <label for="team">Lagnamn</label>
                 <InputText id="team" 
                            class="form-control" 
-                           @bind-Value="userModel.Team" 
-                           placeholder="Enter team name" />
+                           @bind-Value="userModel.Team" />
             </div>
             @if(!string.IsNullOrEmpty(successMessage))
             {
@@ -48,19 +45,19 @@
                 @if(isLoading)
                 {
                     <span>
-                        Adding User...
+                        Skapar användare...
                     </span>
                 }
                 else
                 {
                     <span>
-                        Add User
+                        Skapa användare
                     </span>
                 }
 
                 </button>
                 <button type="button" class="btn btn-secondary" @onclick="ResetForm">
-                    Reset
+                    Rensa
                 </button>
             </div>
             

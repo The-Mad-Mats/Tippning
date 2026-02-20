@@ -51,13 +51,16 @@ namespace TipsWeb.Pages
             };
             foreach(var game in Games)
             {
-                var gameResult = new SaveGame
+                if (game.Team1Score != null && game.Team2Score != null)
                 {
-                    GameId = game.Id,
-                    Team1Score = game.Team1Score,
-                    Team2Score = game.Team2Score
-                };
-                saveGamesReq.Games.Add(gameResult);
+                    var gameResult = new SaveGame
+                    {
+                        GameId = game.Id,
+                        Team1Score = game.Team1Score,
+                        Team2Score = game.Team2Score
+                    };
+                    saveGamesReq.Games.Add(gameResult);
+                }
             }
             Proxy.SaveGames(saveGamesReq);
             //Items.Add(new GameUser

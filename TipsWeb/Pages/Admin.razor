@@ -22,7 +22,7 @@
                         <input type="checkbox" @bind="game.IsSelected"/>
                     </div>
                     <div class="col-md-2">
-                        @game.DateTime.ToString("g")
+                        @game.GameTime.ToString("g")
                     </div>
                     <div class="col-md-2">
                         @game.Team1
@@ -81,7 +81,7 @@
                     <label for="date">
                         Date
                     </label>
-                    <input type="datetime" id="date" class="form-control" @bind="newGame.DateTime"/>
+                    <input type="datetime" id="date" class="form-control" @bind="newGame.GameTime"/>
                 </div>
                 <!-- HOME TEAM FIELD -->
                 <div class="form-group">

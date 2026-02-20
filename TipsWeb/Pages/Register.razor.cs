@@ -56,10 +56,14 @@ namespace TipsWeb.Pages
                     await Task.Delay(1500);
                     ResetForm();
                 }
+                else
+                {
+                    errorMessage = "Användarnamnet är redan upptaget";
+                }
             }
             catch(Exception ex)
             {
-                errorMessage = "An error occurred while adding the user. Please try again.";
+                errorMessage = "Ett fel inträffade";
             }
             finally
             {

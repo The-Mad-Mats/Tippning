@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TipsWebApi.Entities
 {
-    [Table("UserLeague")]
+    [Table("userleague")]
     public class UserLeague
     {
         [Key]

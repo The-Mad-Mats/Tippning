@@ -94,7 +94,7 @@ public class AdminController : ControllerBase
     [HttpPost]
     [Route("CalculateResult")]
     public bool CalculateResult(CalcResultReq req)
-    {
+    { 
         if (CheckUser(req.UserId, req.Token))
         {
             try
@@ -104,7 +104,7 @@ public class AdminController : ControllerBase
                     var game = _context.Games.Include(y => y.UserGames).FirstOrDefault(x => x.Id == gameReq.Id);
                     if (game != null)
                     {
-                        if(game.Team1Score == gameReq.Team1Score && game.Team2Score == gameReq.Team2Score)
+                        if (game.Team1Score == gameReq.Team1Score && game.Team2Score == gameReq.Team2Score)
                         {
                             continue; // No change in result, skip calculation
                         }
@@ -117,7 +117,8 @@ public class AdminController : ControllerBase
                                 {
                                     if (userGame.Points != null)
                                     {
-                                        userGame.User.Points -= userGame.Points.Value;
+                                        var currentUser = _context.Users.First(x => x.Id == userGame.UserId);
+                                        currentUser.Points -= userGame.Points.Value;
                                         userGame.Points = 0; // Reset points before recalculation
                                     }
                                 }
@@ -153,7 +154,8 @@ public class AdminController : ControllerBase
                                     points += 2; // Bonus for perfect tip
                                 }
                                 userGame.Points = points;
-                                userGame.User.Points += points;
+                                var currentUser = _context.Users.First(x => x.Id == userGame.UserId);
+                                currentUser.Points += points;
                             }
                         }
                     }
@@ -163,6 +165,7 @@ public class AdminController : ControllerBase
             }
             catch (Exception ex)
             {
+                //return ex.Message + " " + ex.InnerException?.Message;
                 return false;
             }
         }

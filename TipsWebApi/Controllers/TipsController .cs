@@ -246,6 +246,11 @@ public class TipsController : ControllerBase
     {
         try
         {
+            var existingUser = _context.Users.FirstOrDefault(x => x.UserName == req.UserName);
+            if (existingUser != null) 
+            {
+                return false;
+            }
             var user = new Entities.User()
             {
                 UserName = req.UserName,
@@ -259,9 +264,11 @@ public class TipsController : ControllerBase
             var userId = _context.SaveChanges();
             return true;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return false;
+            //return ex.InnerException.Message;
+            //return false;
+            throw ex;
         }
     }
 
