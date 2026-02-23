@@ -1,119 +1,327 @@
 ﻿@page "/matcher"
 @inject Models.AppState AppState
 
-<h3>Matcher</h3>
+<div class="matches-container">
+    <h3>Matcher</h3>
 
-<style>
-    .item-image {
-    max-width: 50px;
-    max-height: 50px;
-    object-fit: cover;
-    }
-</style>
+    <div class="matches-list">
+        @foreach (var item in Games)
+        {
+            <div class="match-card">
+                <!-- Date/Time -->
+                <div class="match-time">
+                    @item.GameTime.ToString("g")
+                </div>
 
-<div class="container mt-4">
-    @foreach (var item in Games)
-    {
-       @*  <div class="card mb-3">
-        <div class="card-body"> *@
-        <div class="row align-items-left">
-            <div class="col-md-2">
-                @item.GameTime.ToString("g")
-            </div>
-            <div class="col-md-1">
-                <img src="@item.Team1Flag" alt="Item image" class="item-image rounded" />
-            </div>
-            <div class="col-md-2">
-                @item.Team1
-            </div>
-            -
-            <div class="col-md-1">
-                <img src="@item.Team2Flag" alt="Item image" class="item-image rounded" />
-            </div>
-            <div class="col-md-2">
-                @item.Team2
-            </div>
-            <div class="col-md-1">
-                @if(item.IsEditable)
-                {
-                    <input type="text" class="form-control" @bind="item.Team1Score" />
-                }
-                else
-                {
-                    <input type="text" class="form-control" @bind="item.Team1Score" readonly/>
-                }
-            </div>
-            -
-            <div class="col-md-1">
-                @if (item.IsEditable)
-                {
-                    <input type="text" class="form-control" @bind="item.Team2Score" />
-                }
-                else
-                {
-                    <input type="text" class="form-control" @bind="item.Team2Score" readonly />
-                }
-            </div>
-        </div>
-       @*  </div>
-        </div> *@
-    }
+                <!-- Teams Row -->
+                <div class="teams-row">
+                    <div class="team team-left">
+                        <span class="team-name">@item.Team1</span>
+                        <img src="@item.Team1Flag" alt="@item.Team1" class="team-flag" />
+                    </div>
 
-    <button class="btn btn-primary" @onclick="Spara">Spara</button>
+                    <div class="vs-divider">VS</div>
+
+                    <div class="team team-right">
+                        <img src="@item.Team2Flag" alt="@item.Team2" class="team-flag" />
+                        <span class="team-name">@item.Team2</span>
+                    </div>
+                </div>
+
+                <!-- Scores Row -->
+                <div class="scores-row">
+                    @if (item.IsEditable)
+                    {
+                        <input type="text" class="score-input" @bind="item.Team1Score" placeholder="0" />
+                        <span class="score-separator">-</span>
+                        <input type="text" class="score-input" @bind="item.Team2Score" placeholder="0" />
+                    }
+                    else
+                    {
+                        <input type="text" class="score-input" @bind="item.Team1Score" readonly />
+                        <span class="score-separator">-</span>
+                        <input type="text" class="score-input" @bind="item.Team2Score" readonly />
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <button class="btn btn-primary btn-save" @onclick="Spara">Spara</button>
 </div>
 
-@* @code {
-    private List<ItemModel> Items { get; set; } = new();
+<style>
+    /* ===================================== */
+    /* CONTAINER */
+    /* ===================================== */
 
-    protected override void OnInitialized()
-    {
-        Items.Add(new ItemModel
-            {
-                StartTime = DateTime.Now.AddHours(1),
-                Team1Flag = "images/sweden.png",
-                Team1 = "Sverige",
-                Team2Flag = "images/ukraina.png",
-                Team2 = "Ukraina",
-                Team1Score = "",
-                Team2Score = ""
-            });
-
-        Items.Add(new ItemModel
-            {
-                StartTime = DateTime.Now.AddDays(1),
-                Team1Flag = "images/polen.png",
-                Team1 = "Polen",
-                Team2Flag = "images/albanien.png",
-                Team2 = "Albanien",
-                Team1Score = "",
-                Team2Score = ""
-            });
+    .matches-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 2rem;
     }
 
-    private void Spara()
-    {
-        Items.Add(new ItemModel
-            {
-                Team1Flag = "images/default.png",
-                Team1 = $"Item {Items.Count + 1}",
-                Team2Flag = "images/default.png",
-                Team2 = "New item",
-                Team1Score = "",
-                Team2Score = ""
-            });
+        .matches-container h3 {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+
+    .matches-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
     }
 
-    public class ItemModel
-    {
-        public DateTime StartTime = DateTime.MinValue;
-        public string Team1Flag { get; set; } = "";
-        public string Team1 { get; set; } = "";
-        public string Team2Flag { get; set; } = "";
-        public string Team2 { get; set; } = "";
-        public string Team1Score { get; set; } = "";
-        public string Team2Score { get; set; } = "";
+    /* ===================================== */
+    /* MATCH CARD */
+    /* ===================================== */
+
+    .match-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
     }
-}
- *@
 
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
 
+    .match-time {
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* ===================================== */
+    /* TEAMS ROW */
+    /* ===================================== */
+
+    .teams-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .team {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+    }
+
+    .team-left {
+        justify-content: flex-end;
+    }
+
+    .team-right {
+        justify-content: flex-start;
+    }
+
+    .team-flag {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+    }
+
+    .team-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .team-left .team-name {
+        text-align: right;
+    }
+
+    .team-right .team-name {
+        text-align: left;
+    }
+
+    .vs-divider {
+        color: #95a5a6;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    /* ===================================== */
+    /* SCORES ROW */
+    /* ===================================== */
+
+    .scores-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .score-input {
+        width: 80px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        transition: border-color 0.2s;
+    }
+
+        .score-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .score-input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+    .score-separator {
+        color: #95a5a6;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+
+    /* ===================================== */
+    /* BUTTON */
+    /* ===================================== */
+
+    .btn-save {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+        border: none;
+        cursor: pointer;
+    }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+    /* ===================================== */
+    /* RESPONSIVE - MOBILE */
+    /* ===================================== */
+
+    @@media (max-width: 768px) {
+        .matches-container {
+            padding: 1rem;
+        }
+
+            .matches-container h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+        .matches-list {
+            gap: 1rem;
+        }
+
+        .match-card {
+            padding: 1rem;
+        }
+
+        .match-time {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .teams-row {
+            gap: 0.5rem;
+        }
+
+        .team {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .team-flag {
+            width: 35px;
+            height: 35px;
+        }
+
+        .team-name {
+            font-size: 0.85rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .team-left .team-name {
+            white-space: nowrap;
+        }
+
+        .team-right .team-name {
+            white-space: nowrap;
+        }
+
+        .vs-divider {
+            font-size: 0.75rem;
+        }
+
+        .scores-row {
+            padding-top: 0.75rem;
+        }
+
+        .score-input {
+            width: 60px;
+            padding: 0.6rem;
+            font-size: 1.1rem;
+        }
+
+        .score-separator {
+            font-size: 1.25rem;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .matches-container h3 {
+            font-size: 1.25rem;
+        }
+
+        .team-flag {
+            width: 30px;
+            height: 30px;
+        }
+
+        .team-name {
+            font-size: 0.8rem;
+        }
+
+        .vs-divider {
+            font-size: 0.7rem;
+        }
+
+        .score-input {
+            width: 50px;
+            padding: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .score-separator {
+            font-size: 1.1rem;
+        }
+    }
+</style>

@@ -55,17 +55,6 @@ namespace TipsWeb.Pages
         private void AddGames()
         { 
             OpenPopup();
-            //var newId = games.Any() ? games.Max(g => g.Id) + 1 : 1;
-            //games.Add(new GameItem
-            //{
-            //    Id = newId, 
-            //    HomeTeam = $"New Game {newId}", 
-            //    AwayTeam = "Uncategorized", 
-            //    HomeTeamScore = "",
-            //    AwayTeamScore = "",
-            //    IsSelected = false
-            //});
-            //calculationResult = $"Added new game with ID {newId}";
         }
         // ========================================
         // POPUP METHODS
@@ -102,20 +91,5 @@ namespace TipsWeb.Pages
             ClosePopup();
             await LoadInitialGames();
         }
-
-        // ========================================
-        // MODELS
-        // ========================================
-        //public class GameItem
-        //{
-        //    public int Id {get; set;}
-        //    public DateTime Date { get; set; } = DateTime.Now;
-        //    public string HomeTeam { get; set; } = "";
-        //    public string AwayTeam { get; set; } = "";
-        //    public string HomeTeamScore {get; set;} = "";
-        //    public string AwayTeamScore {get; set;} = "";
-        //    public bool IsSelected {get; set;}
-        //}
-
     }
 }

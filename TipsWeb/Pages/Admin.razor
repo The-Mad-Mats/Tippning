@@ -18,9 +18,6 @@
             @foreach(var game in games)
             {
                 <div class="row align-items-left">
-                    <div class="col-md-auto">
-                        <input type="checkbox" @bind="game.IsSelected"/>
-                    </div>
                     <div class="col-md-2">
                         @game.GameTime.ToString("g")
                     </div>
@@ -31,10 +28,10 @@
                         @game.Team2
                     </div>
                     <div class="col-md-1">
-                        <input type="text" class="text-input" @bind="game.Team1Score" placeholder="Home tema score"/>
+                        <input type="text" class="text-input" @bind="game.Team1Score" />
                     </div>
                     <div class="col-md-1">
-                        <input type="text" class="text-input" @bind="game.Team2Score" placeholder="Away team score"/>
+                        <input type="text" class="text-input" @bind="game.Team2Score" />
                     </div>
                 </div>
             }
