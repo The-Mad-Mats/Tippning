@@ -12,54 +12,100 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
+        <!-- HOME SECTION -->
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
                 <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
             </NavLink>
         </div>
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="login">
                 <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Login
             </NavLink>
         </div>
+
+        <!-- SEPARATOR -->
+        <div class="nav-separator"></div>
+
+        <!-- MATCHTIPSET SECTION -->
+        <div class="nav-section-header">
+            Matchtipset
+        </div>
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="matcher">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Matcher
             </NavLink>
         </div>
+
         <div class="nav-item px-3">
             <NavLink class="nav-link" href="leagues">
                 <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tabell
             </NavLink>
         </div>
+
         @if (AppState.CurrentUser?.Admin == true)
         {
+            <!-- SEPARATOR -->
+            <div class="nav-separator"></div>
+
+            <!-- ADMIN SECTION -->
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="admin">
                     <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Admin
                 </NavLink>
             </div>
         }
-        @*         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Counter
-            </NavLink>
+        <!-- SEPARATOR -->
+        <div class="nav-separator"></div>
+
+        <!-- MATCHTIPSET SECTION -->
+        <div class="nav-section-header">
+            Tabelltipset
         </div>
+
         <div class="nav-item px-3">
-            <NavLink class="nav-link" href="weather">
-                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Weather
+            <NavLink class="nav-link" href="rankteam">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tippa placering
             </NavLink>
         </div>
- *@    </nav>
+
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="rankleagues">
+                <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> Tabell
+            </NavLink>
+        </div>
+
+        @if (AppState.CurrentUser?.Admin == true)
+        {
+            <!-- SEPARATOR -->
+            <div class="nav-separator"></div>
+
+            <!-- ADMIN SECTION -->
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="rankadmin">
+                    <span class="bi bi-plus-square-fill-nav-menu" aria-hidden="true"></span> Admin
+                </NavLink>
+            </div>
+        }
+    </nav>
 </div>
 
-@code {
-    private bool collapseNavMenu = true;
-
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
-
-    private void ToggleNavMenu()
-    {
-        collapseNavMenu = !collapseNavMenu;
+<style>
+    .nav-separator {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 1rem 0;
     }
-}
+
+    .nav-section-header {
+        padding: 0.75rem 1.5rem;
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-top: 0.5rem;
+    }
+</style>

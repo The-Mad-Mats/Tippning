@@ -1,0 +1,579 @@
+﻿@page "/rankleagues"
+@inject Models.AppState AppState
+
+<div class="container">
+    <div class="header">
+        <h2>Ranking</h2>
+    </div>
+
+    <div class="filter-section">
+        <label for="category">Välj liga:</label>
+        <select id="category" class="form-select" @bind="selectedLeague" @bind:after="OnCategoryChanged">
+            @foreach (var category in Leagues)
+            {
+                <option value="@category.Id">
+                    @category.Name
+                </option>
+            }
+        </select>
+        <div class="button-container">
+            <button class="btn btn-primary" @onclick="JoinLeague">Gå med i liga</button>
+            <button class="btn btn-secondary" @onclick="CreateLeague">Skapa liga</button>
+        </div>
+    </div>
+
+    @if (rankLeague != null && rankLeague.TeamRanks.Any())
+    {
+        <div class="rank-league-container">
+            <div class="table-wrapper">
+                <table class="rank-table">
+                    <thead>
+                        <tr>
+                            <th class="team-header">Lag</th>
+                            @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                            {
+                                <th class="user-header">@userTeamRank.Team</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var teamRank in rankLeague.TeamRanks)
+                        {
+                            <tr>
+                                <td class="team-cell">@teamRank.Team</td>
+                                @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                                {
+                                    var userRank = userTeamRank.UserRanks.FirstOrDefault(ur => ur.TeamId == teamRank.TeamId);
+                                    <td class="points-cell">
+                                        @if (userRank != null)
+                                        {
+                                            <span class="points">@userRank.Points</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="no-points">-</span>
+                                        }
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                    <tfoot>
+                        <tr class="summary-row">
+                            <td class="summary-label">Totalt</td>
+                            @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                            {
+                                var totalPoints = userTeamRank.UserRanks.Sum(ur => ur.Points);
+                                <td class="summary-cell">
+                                    <span class="summary-points">@totalPoints</span>
+                                </td>
+                            }
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="no-results">
+            <p>Inga lag i den här ligan</p>
+        </div>
+    }
+</div>
+
+<!--                                                                                                     ========================================== -->
+<!-- POPUP MODAL - CREATE LEAGUE -->
+<!--                                                                                                     ========================================== -->
+@if (showCreateLeague)
+{
+    <div class="modal-overlay" @onclick="ClosePopupCreate">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Skapa ny liga</h3>
+                <button class="btn-close" @onclick="ClosePopupCreate">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Namn</label>
+                    <input type="text" id="name" class="form-control" @bind="newLeague.Name" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Lösenord</label>
+                    <input type="text" id="password" class="form-control" @bind="newLeague.Password" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="ClosePopupCreate">Avbryt</button>
+                <button class="btn btn-primary" @onclick="SaveLeague">Spara liga</button>
+            </div>
+        </div>
+    </div>
+}
+
+<!--                                                                                                     ========================================== -->
+<!-- POPUP MODAL - JOIN LEAGUE -->
+<!--                                                                                                     ========================================== -->
+@if (showJoinLeague)
+{
+    <div class="modal-overlay" @onclick="ClosePopupJoin">
+        <div class="modal-content" @onclick:stopPropagation="true">
+            <div class="modal-header">
+                <h3>Gå med i liga</h3>
+                <button class="btn-close" @onclick="ClosePopupJoin">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="name">Namn</label>
+                    <input type="text" id="name" class="form-control" @bind="joinLeague.Name" />
+                </div>
+                <div class="form-group">
+                    <label for="password">Lösenord</label>
+                    <input type="text" id="password" class="form-control" @bind="joinLeague.Password" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="ClosePopupJoin">Avbryt</button>
+                <button class="btn btn-primary" @onclick="SaveJoinLeague">Gå med</button>
+            </div>
+        </div>
+    </div>
+}
+
+<style>
+    /*                                                                                                   ===================================== */
+    /* CONTAINER & LAYOUT */
+    /*                                                                                                   ===================================== */
+
+    .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    .header {
+        margin-bottom: 2rem;
+    }
+
+        .header h2 {
+            color: #333;
+            font-size: 2rem;
+            margin: 0;
+        }
+
+    /*                                                                                                   ===================================== */
+    /* FILTER SECTION */
+    /*                                                                                                   ===================================== */
+
+    .filter-section {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    }
+
+        .filter-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+        }
+
+    .form-select {
+        width: 100%;
+        max-width: 300px;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        background-color: white;
+        cursor: pointer;
+        transition: border-color 0.3s;
+        margin-bottom: 1.5rem;
+    }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+    .button-container {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    /*                                                                                                   ===================================== */
+    /* BUTTONS */
+    /*                                                                                                   ===================================== */
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: #667eea;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+    .btn-secondary {
+        background: #27ae60;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background: #229954;
+        }
+
+    /*                                                                                                   ===================================== */
+    /* NO RESULTS */
+    /*                                                                                                   ===================================== */
+
+    .no-results {
+        text-align: center;
+        padding: 3rem;
+        background: white;
+        border-radius: 8px;
+        color: #999;
+    }
+
+    /*                                                                                                   ===================================== */
+    /* MODAL */
+    /*                                                                                                   ===================================== */
+
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+    }
+
+    .modal-content {
+        background: white;
+        border-radius: 12px;
+        width: 90%;
+        max-width: 500px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 2rem;
+        color: #7f8c8d;
+        cursor: pointer;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        transition: all 0.2s;
+    }
+
+        .btn-close:hover {
+            background: #f0f0f0;
+            color: #2c3e50;
+        }
+
+    .modal-body {
+        padding: 2rem 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 0.75rem;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 1rem;
+        transition: border-color 0.2s;
+        box-sizing: border-box;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.5rem;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    /*                                                                                                   ===================================== */
+    /* RANK LEAGUE TABLE */
+    /*                                                                                                   ===================================== */
+
+    .rank-league-container {
+        margin-top: 2rem;
+    }
+
+        .rank-league-container h3 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+    .table-wrapper {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .rank-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+    }
+
+        .rank-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .rank-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+    .team-header {
+        min-width: 200px;
+        position: sticky;
+        left: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 10;
+    }
+
+    .user-header {
+        min-width: 120px;
+        text-align: center;
+    }
+
+    .rank-table tbody tr {
+        border-bottom: 1px solid #ecf0f1;
+        transition: background 0.2s;
+    }
+
+        .rank-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .rank-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+    .rank-table td {
+        padding: 1rem;
+    }
+
+    .team-cell {
+        font-weight: 600;
+        color: #2c3e50;
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 5;
+    }
+
+    .rank-table tbody tr:hover .team-cell {
+        background: #f8f9fa;
+    }
+
+    .points-cell {
+        text-align: center;
+    }
+
+    .points {
+        display: inline-block;
+        background: #27ae60;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .no-points {
+        color: #95a5a6;
+        font-size: 1.2rem;
+    }
+
+    /*                                                                                                   ===================================== */
+    /* TABLE FOOTER - SUMMARY ROW */
+    /*                                                                                                   ===================================== */
+
+    .rank-table tfoot {
+        background: #f8f9fa;
+        border-top: 3px solid #667eea;
+    }
+
+    .summary-row {
+        font-weight: bold;
+    }
+
+        .summary-row td {
+            padding: 1rem;
+        }
+
+    .summary-label {
+        font-weight: 700;
+        color: #2c3e50;
+        font-size: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        position: sticky;
+        left: 0;
+        background: #f8f9fa;
+        z-index: 5;
+    }
+
+    .summary-cell {
+        text-align: center;
+    }
+
+    .summary-points {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 0.35rem 0.85rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    /*                                                                                                   ===================================== */
+    /* RESPONSIVE - MOBILE */
+    /*                                                                                                   ===================================== */
+
+    @@media (max-width: 768px) {
+        .container {
+            padding: 1rem;
+        }
+
+        .header h2 {
+            font-size: 1.5rem;
+        }
+
+        .filter-section {
+            padding: 1rem;
+        }
+
+        .form-select {
+            max-width: 100%;
+        }
+
+        .button-container {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            width: 100%;
+        }
+
+        .rank-league-container h3 {
+            font-size: 1.25rem;
+        }
+
+        .rank-table th,
+        .rank-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .team-header {
+            min-width: 150px;
+        }
+
+        .user-header {
+            min-width: 100px;
+        }
+
+        .points {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        .summary-row td {
+            padding: 0.75rem 0.5rem;
+        }
+
+        .summary-label {
+            font-size: 0.85rem;
+        }
+
+        .summary-points {
+            padding: 0.25rem 0.6rem;
+            font-size: 0.85rem;
+        }
+
+        .modal-content {
+            width: 95%;
+            margin: 1rem;
+        }
+
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+            padding: 1rem;
+        }
+
+        .modal-footer {
+            flex-direction: column;
+        }
+
+            .modal-footer .btn {
+                width: 100%;
+            }
+    }
+</style>

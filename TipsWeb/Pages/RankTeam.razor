@@ -1,0 +1,343 @@
+﻿@page "/rankteam"
+
+<div class="ranking-container">
+    <h3>Tippa sluttabell</h3>
+    <p class="subtitle">Dra och släpp för att ordna hur du tror att sluttabellen kommer se ut. Deadline 2026-03-06 02.30</p>
+
+    <div class="teams-list" id="teamsList">
+        @for (int i = 0; i < teams.Count; i++)
+        {
+            var index = i;
+            var team = teams[i];
+
+            <div class="team-item" data-index="@index">
+                <div class="rank-number">@(index + 1)</div>
+                <div class="team-info">
+                    <span class="team-name">@team.Team</span>
+                    <span class="drag-handle">☰</span>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="actions">
+        <button class="btn btn-primary" @onclick="ResetRanking">Återställ</button>
+        @if(@StartTid > @CurrentTimeStamp)
+        {
+            <button class="btn btn-secondary" @onclick="SaveRanking">Spara tips</button>
+        }
+    </div>
+
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="message">@message</div>
+    }
+</div>
+
+
+<script>
+    let draggedElement = null;
+    let draggedIndex = -1;
+    let dotNetHelper = null;
+    let initialized = false;
+
+    window.initializeDragDrop = function (helper) {
+        dotNetHelper = helper;
+
+        // Clear any existing initialization
+        if (initialized) {
+            return; // Skip if already initialized this render
+        }
+
+        initialized = true;
+
+        // Use setTimeout to ensure this runs after the current call stack
+        setTimeout(() => {
+            initialized = false;
+            attachEventListeners();
+        }, 0);
+    };
+
+    function attachEventListeners() {
+        const container = document.getElementById('teamsList');
+        if (!container) return;
+
+        const items = container.querySelectorAll('.team-item');
+
+        items.forEach((item) => {
+            // Skip if already has listeners
+            if (item.dataset.hasListeners === 'true') {
+                return;
+            }
+
+            item.dataset.hasListeners = 'true';
+            item.setAttribute('draggable', 'true');
+
+            item.addEventListener('dragstart', handleDragStart);
+            item.addEventListener('dragend', handleDragEnd);
+            item.addEventListener('dragover', handleDragOver);
+            item.addEventListener('dragenter', handleDragEnter);
+            item.addEventListener('dragleave', handleDragLeave);
+            item.addEventListener('drop', handleDrop);
+        });
+    }
+
+    function handleDragStart(e) {
+        draggedElement = this;
+        draggedIndex = parseInt(this.getAttribute('data-index'));
+        this.style.opacity = '0.5';
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.innerHTML);
+    }
+
+    function handleDragEnd(e) {
+        this.style.opacity = '1';
+        const items = document.querySelectorAll('.team-item');
+        items.forEach(i => i.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        return false;
+    }
+
+    function handleDragEnter(e) {
+        this.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+        this.classList.remove('drag-over');
+    }
+
+    function handleDrop(e) {
+        e.stopPropagation();
+        e.preventDefault();
+
+        const dropIndex = parseInt(this.getAttribute('data-index'));
+
+        if (draggedIndex !== dropIndex && dotNetHelper) {
+            // Clear the hasListeners flag on all items so they get reattached after render
+            const allItems = document.querySelectorAll('.team-item');
+            allItems.forEach(item => {
+                delete item.dataset.hasListeners;
+            });
+
+            dotNetHelper.invokeMethodAsync('MoveTeam', draggedIndex, dropIndex);
+        }
+
+        this.classList.remove('drag-over');
+        return false;
+    }
+</script>
+
+<style>
+    /* ===================================== */
+    /* CONTAINER */
+    /* ===================================== */
+
+    .ranking-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+        .ranking-container h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+            font-size: 2rem;
+        }
+
+    .subtitle {
+        color: #7f8c8d;
+        margin-bottom: 2rem;
+        font-size: 0.95rem;
+    }
+
+    /* ===================================== */
+    /* TEAMS LIST */
+    /* ===================================== */
+
+    .teams-list {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .team-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid #ecf0f1;
+        cursor: move;
+        transition: all 0.2s;
+        background: white;
+        user-select: none;
+    }
+
+        .team-item:last-child {
+            border-bottom: none;
+        }
+
+        .team-item:hover {
+            background: #f8f9fa;
+        }
+
+        .team-item.drag-over {
+            background: #e3f2fd;
+            border-top: 3px solid #667eea;
+        }
+
+    .rank-number {
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 700;
+        font-size: 1.1rem;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .team-info {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex: 1;
+    }
+
+    .team-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .drag-handle {
+        color: #95a5a6;
+        font-size: 1.5rem;
+        user-select: none;
+    }
+
+    /* ===================================== */
+    /* ACTIONS */
+    /* ===================================== */
+
+    .actions {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 0.75rem 2rem;
+        border: none;
+        border-radius: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .btn-primary {
+        background: #e74c3c;
+        color: white;
+    }
+
+        .btn-primary:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+        }
+
+    .btn-secondary {
+        background: #27ae60;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background: #229954;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(39, 174, 96, 0.4);
+        }
+
+    /* ===================================== */
+    /* MESSAGE */
+    /* ===================================== */
+
+    .message {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
+    }
+
+    /* ===================================== */
+    /* RESPONSIVE - MOBILE */
+    /* ===================================== */
+
+    @@media (max-width: 768px) {
+        .ranking-container {
+            padding: 1rem;
+        }
+
+            .ranking-container h3 {
+                font-size: 1.5rem;
+            }
+
+        .subtitle {
+            font-size: 0.85rem;
+        }
+
+        .team-item {
+            padding: 0.75rem 1rem;
+        }
+
+        .rank-number {
+            min-width: 35px;
+            height: 35px;
+            font-size: 1rem;
+        }
+
+        .team-name {
+            font-size: 0.95rem;
+        }
+
+        .drag-handle {
+            font-size: 1.25rem;
+        }
+
+        .actions {
+            flex-direction: column;
+        }
+
+        .btn {
+            width: 100%;
+        }
+    }
+
+    @@media (max-width: 480px) {
+        .ranking-container h3 {
+            font-size: 1.25rem;
+        }
+
+        .team-name {
+            font-size: 0.9rem;
+        }
+
+        .rank-number {
+            min-width: 30px;
+            height: 30px;
+            font-size: 0.9rem;
+        }
+    }
+</style>

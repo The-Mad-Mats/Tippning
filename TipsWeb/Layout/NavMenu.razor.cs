@@ -14,5 +14,18 @@ namespace TipsWeb.Layout
         {
             AppState.OnChange -= StateHasChanged;
         }
+
+        private bool collapseNavMenu = true;
+        private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+        private void ToggleNavMenu()
+        {
+            collapseNavMenu = !collapseNavMenu;
+        }
+
+        //protected override void OnInitialized()
+        //{
+        //    AppState.OnChange += StateHasChanged;
+        //}
     }
 }

@@ -172,6 +172,61 @@ public class AdminController : ControllerBase
         return false;
     }
 
+    [HttpPost]
+    [Route("GetTeamRank")]
+    public List<Models.TeamRank> GetTeamRank(GetDefaultReq req)
+    {
+        if (CheckUser(req.UserId, req.Token))
+        {
+            var teamranks = new List<Models.TeamRank>();
+            var allGames = _context.TeamRanks;
+            foreach (var myGame in allGames)
+            {
+                teamranks.Add(new Models.TeamRank
+                {
+                    Id = 0,
+                    Team = myGame.Team,
+                    TeamId = myGame.Id,
+                    Rank = myGame.Rank
+                });
+            }
+            return teamranks;
+        }
+        return new List<Models.TeamRank>();
+    }
+
+    [HttpPost]
+    [Route("SaveCurrentRank")]
+    public bool SaveCurrentRank(SaveTeamRankReq req)
+    {
+        if (CheckUser(req.UserId, req.Token))
+        {
+            try
+            {
+                foreach (var teamReq in req.TeamRanks)
+                {
+                    var team = _context.TeamRanks.FirstOrDefault(x => x.Id == teamReq.TeamId);
+                    if (team != null)
+                    {
+                        team.Rank = teamReq.Rank;
+                        var userRanks = _context.UserRanks.Where(x => x.TeamRankId == teamReq.TeamId).ToList();
+                        foreach (var userRank in userRanks)
+                        {
+                            userRank.Points = Math.Abs(teamReq.Rank - userRank.Rank);
+                        }
+                    }
+                }
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
     private bool CheckUser(int userId, string token)
     {
         var user = _context.Users.FirstOrDefault(x => x.Id == userId);

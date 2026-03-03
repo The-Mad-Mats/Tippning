@@ -1,531 +1,187 @@
-﻿@* @page "/products"
-@page "/products/{Category}"
+﻿@page "/rank-league"
 
-<!-- ========================================== -->
-<!-- PRODUCTS CONTAINER -->
-<!-- ========================================== -->
-<div class="products-container">
-    
-    <!-- HEADER SECTION -->
-    <div class="products-header">
-        <h2>@GetPageTitle()</h2>
-        <p class="breadcrumb">
-            <a href="/products">All Products</a>
-            
-            @if(!string.IsNullOrEmpty(Category))
-            {
-                <span>
-                    /@Category
-                </span>
-            }
+<div class="rank-league-container">
+    <h3>Team Rankings</h3>
 
-        </p>
+    <div class="table-wrapper">
+        <table class="rank-table">
+            <thead>
+                <tr>
+                    <th class="team-header">Team</th>
+                    @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                    {
+                        <th class="user-header">@userTeamRank.Team</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var teamRank in rankLeague.TeamRanks)
+                {
+                    <tr>
+                        <td class="team-cell">@teamRank.Team</td>
+                        @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                        {
+                            var userRank = userTeamRank.UserRanks.FirstOrDefault(ur => ur.TeamId == teamRank.TeamId);
+                            <td class="points-cell">
+                                @if (userRank != null)
+                                {
+                                    <span class="points">@userRank.Points</span>
+                                }
+                                else
+                                {
+                                    <span class="no-points">-</span>
+                                }
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
     </div>
-
-    <!-- STATISTICS CARDS -->
-    <div class="products-stats">
-        <div class="stat-card">
-            <div class="stat-value">@filteredProducts.Count</div>
-            <div class="stat-label">Products Found</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">@products.Count</div>
-            <div class="stat-label">Total Products</div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-value">@GetUniqueCategories()</div>
-            <div class="stat-label">Categories</div>
-        </div>
-    </div>
-
-    <!-- PRODUCTS GRID -->
-    <div class="products-grid">
-        
-@if(filteredProducts.Any())
-{
-    @foreach(var 
- product 
-in
- filteredProducts
-)
-
-            
-{
-
-                
-<
-div
- 
-class
-=
-"
-product-card
-"
->
-
-                    
-<
-div
- 
-class
-=
-"
-product-image
-"
->
-
-                        
-<
-span
- 
-class
-=
-"
-product-icon
-"
->
-@
-GetCategoryIcon
-(
-product
-.
-Category
-)
-</
-span
->
-
-                    
-</
-div
->
-
-                    
-<
-div
- 
-class
-=
-"
-product-info
-"
->
-
-                        
-<
-h3
->
-@
-product
-.
-Name
-</
-h3
->
-
-                        
-<
-p
- 
-class
-=
-"
-product-category
-"
->
-@
-product
-.
-Category
-</
-p
->
-
-                        
-<
-p
- 
-class
-=
-"
-product-description
-"
->
-@
-product
-.
-Description
-</
-p
->
-
-                        
-<
-div
- 
-class
-=
-"
-product-footer
-"
->
-
-                            
-<
-span
- 
-class
-=
-"
-product-price
-"
->
-$
-@
-product
-.
-Price
-.
-ToString
-(
-"F2"
-)
-</
-span
->
-
-                            
-<
-button
- 
-class
-=
-"
-btn-view
-"
- 
-@onclick
-=
-"
-() => ViewProduct(product.Id)
-"
->
-View Details
-</
-button
->
-
-                        
-</
-div
->
-
-                    
-</
-div
->
-
-                
-</
-div
->
-
-            
-}
-
-        
-}
-
-        
-else
-
-        
-{
-
-            
-<
-div
- 
-class
-=
-"
-no-products
-"
->
-
-                
-<
-span
- 
-class
-=
-"
-empty-icon
-"
->
-📦
-</
-span
->
-
-                
-<
-h3
->
-No products found
-</
-h3
->
-
-                
-<
-p
->
-There are no products in the "
-@
-Category
-" category.
-</
-p
->
-
-                
-<
-a
- 
-href
-=
-"
-/products
-"
- 
-class
-=
-"
-btn-back
-"
->
-View All Products
-</
-a
->
-
-            
-</
-div
->
-
-        
-}
-
-    </div>
-    
 </div>
 
-/* ===================================== */
-/* CONTAINER & LAYOUT */
-/* ===================================== */
 
-.products-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem;
-}
+<style>
+    /* ===================================== */
+    /* CONTAINER */
+    /* ===================================== */
 
-/* ===================================== */
-/* HEADER SECTION */
-/* ===================================== */
+    .rank-league-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+    }
 
-.products-header {
-    margin-bottom: 2rem;
-}
+        .rank-league-container h3 {
+            color: #2c3e50;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
 
-.products-header h2 {
-    margin: 0 0 0.5rem 0;
-    color: #2c3e50;
-    font-size: 2rem;
-}
+    /* ===================================== */
+    /* TABLE */
+    /* ===================================== */
 
-.breadcrumb {
-    color: #7f8c8d;
-    margin: 0;
-}
+    .table-wrapper {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
 
-.breadcrumb a {
-    color: #3498db;
-    text-decoration: none;
-}
+    .rank-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 600px;
+    }
 
-.breadcrumb a:hover {
-    text-decoration: underline;
-}
+        .rank-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
 
-/* ===================================== */
-/* STATS SECTION */
-/* ===================================== */
+        .rank-table th {
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
 
-.products-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
+    .team-header {
+        min-width: 200px;
+        position: sticky;
+        left: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 10;
+    }
 
-.stat-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    text-align: center;
-}
+    .user-header {
+        min-width: 120px;
+        text-align: center;
+    }
 
-.stat-value {
-    font-size: 2rem;
-    font-weight: 700;
-    color: #3498db;
-    margin-bottom: 0.5rem;
-}
+    .rank-table tbody tr {
+        border-bottom: 1px solid #ecf0f1;
+        transition: background 0.2s;
+    }
 
-.stat-label {
-    color: #7f8c8d;
-    font-size: 0.9rem;
-}
+        .rank-table tbody tr:hover {
+            background: #f8f9fa;
+        }
 
-/* ===================================== */
-/* PRODUCTS GRID */
-/* ===================================== */
+        .rank-table tbody tr:last-child {
+            border-bottom: none;
+        }
 
-.products-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-    gap: 1.5rem;
-}
+    .rank-table td {
+        padding: 1rem;
+    }
 
-/* ===================================== */
-/* PRODUCT CARD */
-/* ===================================== */
+    .team-cell {
+        font-weight: 600;
+        color: #2c3e50;
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 5;
+    }
 
-.product-card {
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
+    .rank-table tbody tr:hover .team-cell {
+        background: #f8f9fa;
+    }
 
-.product-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+    .points-cell {
+        text-align: center;
+    }
 
-.product-image {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    height: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+    .points {
+        display: inline-block;
+        background: #27ae60;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
 
-.product-icon {
-    font-size: 3rem;
-}
+    .no-points {
+        color: #95a5a6;
+        font-size: 1.2rem;
+    }
 
-.product-info {
-    padding: 1.5rem;
-}
+    /* ===================================== */
+    /* RESPONSIVE - MOBILE */
+    /* ===================================== */
 
-.product-info h3 {
-    margin: 0 0 0.5rem 0;
-    color: #2c3e50;
-    font-size: 1.25rem;
-}
+    @@media (max-width: 768px) {
+        .rank-league-container {
+            padding: 1rem;
+        }
 
-.product-category {
-    color: #7f8c8d;
-    font-size: 0.85rem;
-    text-transform: uppercase;
-    margin: 0 0 0.75rem 0;
-    font-weight: 600;
-}
+            .rank-league-container h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
 
-.product-description {
-    color: #555;
-    margin: 0 0 1rem 0;
-    line-height: 1.5;
-}
+        .rank-table th,
+        .rank-table td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.85rem;
+        }
 
-.product-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding-top: 1rem;
-    border-top: 1px solid #ecf0f1;
-}
+        .team-header {
+            min-width: 150px;
+        }
 
-.product-price {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #27ae60;
-}
+        .user-header {
+            min-width: 100px;
+        }
 
-/* ===================================== */
-/* BUTTONS */
-/* ===================================== */
-
-.btn-view {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-
-.btn-view:hover {
-    background: #2980b9;
-}
-
-.btn-back {
-    display: inline-block;
-    background: #3498db;
-    color: white;
-    padding: 0.75rem 1.5rem;
-    border-radius: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: background 0.2s;
-}
-
-.btn-back:hover {
-    background: #2980b9;
-}
-
-/* ===================================== */
-/* EMPTY STATE */
-/* ===================================== */
-
-.no-products {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 4rem 2rem;
-    background: white;
-    border-radius: 8px;
-}
-
-.empty-icon {
-    font-size: 4rem;
-    display: block;
-    margin-bottom: 1rem;
-}
-
-.no-products h3 {
-    color: #2c3e50;
-    margin: 0 0 0.5rem 0;
-}
-
-.no-products p {
-    color: #7f8c8d;
-    margin: 0 0 1.5rem 0;
-} *@
+        .points {
+            padding: 0.2rem 0.5rem;
+            font-size: 0.8rem;
+        }
+    }
+</style>

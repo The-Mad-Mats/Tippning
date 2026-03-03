@@ -18,5 +18,7 @@ namespace TipsWebApi.Entities
         public virtual ICollection<UserLeague>? UserLeagues { get; set; }
         public virtual ICollection<UserGame>? UserGames{ get; set; }
 
+        public virtual ICollection<UserRankLeague>? UserRankLeagues { get; set; }
+        public virtual ICollection<UserRank>? UserRanks { get; set; }
     }
 }
