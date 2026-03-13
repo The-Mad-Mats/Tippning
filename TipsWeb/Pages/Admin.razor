@@ -11,7 +11,46 @@
     </div>
 
     <!-- GAMES LIST -->
-    <div class="container mt-5">
+    <div class="matches-list">
+        @foreach (var item in games)
+        {
+            <div class="match-card">
+                <!-- Date/Time -->
+                <div class="match-time">
+                    @item.GameTime.ToString("g")
+                </div>
+
+                <!-- Teams Row -->
+                <div class="teams-row">
+                    <div class="team team-left">
+                        <span class="team-name">@item.Team1</span>
+                        <img src="@item.Team1Flag" alt="@item.Team1" class="team-flag" />
+                    </div>
+
+                    <div class="vs-divider">VS</div>
+
+                    <div class="team team-right">
+                        <img src="@item.Team2Flag" alt="@item.Team2" class="team-flag" />
+                        <span class="team-name">@item.Team2</span>
+                    </div>
+                </div>
+
+                <!-- Scores Row -->
+                <div class="scores-row">
+                    <input type="text" class="score-input" @bind="item.Team1Score"  />
+                    <span class="score-separator">-</span>
+                    <input type="text" class="score-input" @bind="item.Team2Score"  />
+                </div>
+            </div>
+        }
+    </div>
+
+
+
+
+
+
+@*     <div class="container mt-5">
         
         @if(games.Any())
         {
@@ -43,7 +82,7 @@
             </div>
         }
     </div>
-    <!-- BUTTONS -->
+ *@    <!-- BUTTONS -->
     <div class="button-container">
         <button class="btn btn-primary" @onclick="DoCalculation">Do Calculation</button>
         <button class="btn btn-secondary" @onclick="AddGames">Add Games</button>
@@ -393,8 +432,133 @@
         .btn-secondary:hover {
             background: #d0d0d0;
         }
+
+    .matches-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
     /* ===================================== */
-    /* RESPONSIVE */
+    /* MATCH CARD */
     /* ===================================== */
-    
- </style>
+
+    .match-card {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+    .match-time {
+        text-align: center;
+        color: #7f8c8d;
+        font-size: 0.9rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+    }
+
+    /* ===================================== */
+    /* TEAMS ROW */
+    /* ===================================== */
+
+    .teams-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .team {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        flex: 1;
+    }
+
+    .team-left {
+        justify-content: flex-end;
+    }
+
+    .team-right {
+        justify-content: flex-start;
+    }
+
+    .team-flag {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        flex-shrink: 0;
+    }
+
+    .team-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 1.1rem;
+    }
+
+    .team-left .team-name {
+        text-align: right;
+    }
+
+    .team-right .team-name {
+        text-align: left;
+    }
+
+    .vs-divider {
+        color: #95a5a6;
+        font-weight: 700;
+        font-size: 0.9rem;
+        flex-shrink: 0;
+    }
+
+    /* ===================================== */
+    /* SCORES ROW */
+    /* ===================================== */
+
+    .scores-row {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #ecf0f1;
+    }
+
+    .score-input {
+        width: 80px;
+        padding: 0.75rem;
+        text-align: center;
+        border: 2px solid #e0e0e0;
+        border-radius: 6px;
+        font-size: 1.25rem;
+        font-weight: 700;
+        transition: border-color 0.2s;
+    }
+
+        .score-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .score-input[readonly] {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+    .score-separator {
+        color: #95a5a6;
+        font-weight: 700;
+        font-size: 1.5rem;
+    }
+</style>

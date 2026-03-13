@@ -279,13 +279,13 @@ namespace TipsWeb
             }
         }
 
-        public async Task<GameAdmin> AddGame(AddGameReq content)
+        public async Task<Game> AddGame(AddGameReq content)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("Admin/AddGame", content);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<GameAdmin>();
+                return await response.Content.ReadFromJsonAsync<Game>();
             }
             catch (Exception ex)
             {
@@ -293,13 +293,13 @@ namespace TipsWeb
                 throw new ApplicationException($"Error posting data to API: {ex.Message}");
             }
         }
-        public async Task<List<GameAdmin>> GetGames(GetGamesReq content)
+        public async Task<List<Game>> GetGames(GetGamesReq content)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("Admin/GetGames", content);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<List<GameAdmin>>();
+                return await response.Content.ReadFromJsonAsync<List<Game>>();
             }
             catch (Exception ex)
             {

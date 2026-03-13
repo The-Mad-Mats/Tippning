@@ -10,10 +10,10 @@ namespace TipsWeb.Pages
         // ========================================
         [Inject] public Proxy _proxy { get; set; }
         private User user = new();
-        private List <GameAdmin> games = new();
+        private List <Game> games = new();
         private string calculationResult = string.Empty;
         private bool showPopup = false;
-        private GameAdmin newGame = new();
+        private Game newGame = new();
         // ========================================
         // LIFECYCLE METHODS
         // ========================================
@@ -61,7 +61,7 @@ namespace TipsWeb.Pages
         // ========================================
         private void OpenPopup()
         {
-            newGame = new GameAdmin
+            newGame = new Game
             {
                 GameTime = DateTime.Today.AddHours(15),
             };
@@ -70,7 +70,7 @@ namespace TipsWeb.Pages
         private void ClosePopup()
         {
             showPopup = false;
-            newGame = new GameAdmin();
+            newGame = new Game();
         }
         private async Task SaveGame()
         {

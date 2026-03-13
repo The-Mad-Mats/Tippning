@@ -23,9 +23,6 @@ namespace TipsWeb.Pages
             user = AppState.CurrentUser;
             if (user != null)
             {
-                //Leagues = await Proxy.GetRankLeagues(new GetDefaultReq { UserId = user.Id, Token = user.Token });
-                //selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
-                //await OnLeagueChanged();
                 Competitions = await Proxy.GetRankCompetitions(new GetDefaultReq { UserId = user.Id, Token = user.Token });
                 selectedCompetition = Competitions.FirstOrDefault()?.Id ?? 0;
                 await OnCompetitionChanged();
@@ -76,10 +73,11 @@ namespace TipsWeb.Pages
             newLeague = new Models.League();
             showCreateLeague = true;
         }
-        private void ClosePopupCreate()
+        private async Task ClosePopupCreate()
         {
             showCreateLeague = false;
             newLeague = new Models.League();
+            await OnCompetitionChanged();
         }
         private async Task SaveLeague()
         {
@@ -97,7 +95,7 @@ namespace TipsWeb.Pages
                 RankCompetitionId = selectedCompetition
             };
             await Proxy.CreateRankLeague(league);
-            ClosePopupCreate();
+            await ClosePopupCreate();
         }
         // ========================================
         // POPUP JoinLeague METHODS
@@ -107,10 +105,11 @@ namespace TipsWeb.Pages
             newLeague = new Models.League();
             showJoinLeague = true;
         }
-        private void ClosePopupJoin()
+        private async Task ClosePopupJoin()
         {
             showJoinLeague = false;
             joinLeague = new Models.League();
+            await OnCompetitionChanged();
         }
         private async Task SaveJoinLeague()
         {
@@ -128,7 +127,7 @@ namespace TipsWeb.Pages
                 RankCompetitionId = selectedCompetition
             };
             await Proxy.JoinRankLeague(league);
-            ClosePopupJoin();
+            await ClosePopupJoin();
         }
     }
 }
