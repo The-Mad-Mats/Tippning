@@ -5,5 +5,7 @@
         public int UserId { get; set; }
         public string Token { get; set; } = "";
         public int LeagueId { get; set; }
-        }
+        public int CompetitionId { get; set; }
+
+    }
 }

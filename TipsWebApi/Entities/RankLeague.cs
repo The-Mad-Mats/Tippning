@@ -10,6 +10,10 @@ namespace TipsWebApi.Entities
         public int Id { get; set; }
         public string Name { get; set; } = "";
         public string Password { get; set; } = "";
+        public int RankCompetitionId { get; set; }
+
         public virtual ICollection<UserRankLeague>? UserRankLeagues { get; set; }
+        public virtual RankCompetition RankCompetition { get; set; } = null!;
+
     }
 }

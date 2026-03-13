@@ -248,7 +248,37 @@ namespace TipsWeb
             }
         }
 
+        public async Task<List<RankCompetition>> GetRankCompetitions(GetDefaultReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Rank/GetRankCompetitions", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<RankCompetition>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+
         //Admin
+        public async Task<List<RankCompetition>> GetAdminRankCompetitions(GetDefaultReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Admin/GetRankCompetitions", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<RankCompetition>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+
         public async Task<GameAdmin> AddGame(AddGameReq content)
         {
             try

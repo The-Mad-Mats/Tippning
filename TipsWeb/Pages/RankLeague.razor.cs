@@ -10,6 +10,8 @@ namespace TipsWeb.Pages
         private Models.RankLeague rankLeague = new();
         private List<Models.League> Leagues = new List<Models.League> { };
         private int selectedLeague = 0;
+        private List<Models.RankCompetition> Competitions = new List<Models.RankCompetition> { };
+        private int selectedCompetition = 0;
         private User user = new();
         private Models.League newLeague = new();
         private Models.League joinLeague = new();
@@ -21,12 +23,30 @@ namespace TipsWeb.Pages
             user = AppState.CurrentUser;
             if (user != null)
             {
-                Leagues = await Proxy.GetRankLeagues(new GetDefaultReq { UserId = user.Id, Token = user.Token });
-                selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
-                await OnCategoryChanged();
+                //Leagues = await Proxy.GetRankLeagues(new GetDefaultReq { UserId = user.Id, Token = user.Token });
+                //selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
+                //await OnLeagueChanged();
+                Competitions = await Proxy.GetRankCompetitions(new GetDefaultReq { UserId = user.Id, Token = user.Token });
+                selectedCompetition = Competitions.FirstOrDefault()?.Id ?? 0;
+                await OnCompetitionChanged();
+
             }
         }
-        private async Task OnCategoryChanged()
+        private async Task OnCompetitionChanged()
+        {
+            if (selectedCompetition == 0)
+            {
+                Competitions = new List<Models.RankCompetition> { };
+            }
+            else
+            {
+                Leagues = await Proxy.GetRankLeagues(new GetDefaultReq { UserId = user.Id, Token = user.Token, CompetitionId = selectedCompetition });
+                selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
+                await OnLeagueChanged();
+            }
+        }
+
+        private async Task OnLeagueChanged()
         {
             if (selectedLeague == 0)
             {
@@ -35,7 +55,7 @@ namespace TipsWeb.Pages
             else
             {
                 var leagueId = Leagues.FirstOrDefault(l => l.Id == selectedLeague)?.Id ?? 0;
-                rankLeague = await Proxy.GetRankLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token });
+                rankLeague = await Proxy.GetRankLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token, CompetitionId = selectedCompetition });
             }
 
         }
@@ -73,7 +93,8 @@ namespace TipsWeb.Pages
                 UserId = AppState.CurrentUser?.Id ?? 0,
                 Token = AppState.CurrentUser?.Token ?? "",
                 LeagueName = newLeague.Name,
-                LeaguePassword = newLeague.Password
+                LeaguePassword = newLeague.Password,
+                RankCompetitionId = selectedCompetition
             };
             await Proxy.CreateRankLeague(league);
             ClosePopupCreate();
@@ -103,7 +124,8 @@ namespace TipsWeb.Pages
                 UserId = AppState.CurrentUser?.Id ?? 0,
                 Token = AppState.CurrentUser?.Token ?? "",
                 LeagueName = joinLeague.Name,
-                LeaguePassword = joinLeague.Password
+                LeaguePassword = joinLeague.Password,
+                RankCompetitionId = selectedCompetition
             };
             await Proxy.JoinRankLeague(league);
             ClosePopupJoin();

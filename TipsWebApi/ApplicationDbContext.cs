@@ -54,6 +54,18 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(ul => ul.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<TeamRank>()
+            .HasOne(ul => ul.RankCompetition)
+            .WithMany(u => u.TeamRanks)
+            .HasForeignKey(ul => ul.RankCompetitionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<RankLeague>()
+            .HasOne(ul => ul.RankCompetition)
+            .WithMany(u => u.RankLeagues)
+            .HasForeignKey(ul => ul.RankCompetitionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -67,4 +79,5 @@ public class ApplicationDbContext : DbContext
     public DbSet<UserRank> UserRanks { get; set; }
     public DbSet<RankLeague> RankLeagues { get; set; }
     public DbSet<TeamRank> TeamRanks { get; set; }
+    public DbSet<RankCompetition> RankCompetitions { get; set; }
 }

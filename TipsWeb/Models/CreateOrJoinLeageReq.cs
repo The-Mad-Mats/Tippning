@@ -6,5 +6,7 @@
         public string Token { get; set; } = "";
         public string LeagueName { get; set; } = "";
         public string LeaguePassword { get; set; } = "";
+        public int RankCompetitionId { get; set; }
+
     }
 }

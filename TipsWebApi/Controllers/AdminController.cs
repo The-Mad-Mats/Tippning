@@ -173,13 +173,44 @@ public class AdminController : ControllerBase
     }
 
     [HttpPost]
+    [Route("GetRankCompetitions")]
+    public List<Models.RankCompetition> GetRankCompetitions(GetDefaultReq req)
+    {
+        try
+        {
+            if (CheckUser(req.UserId, req.Token))
+            {
+                var myCompetitions = _context.RankCompetitions.OrderByDescending(y => y.Deadline).ToList();
+
+                var competitions = new List<Models.RankCompetition>();
+                foreach (var comp in myCompetitions)
+                {
+                    var compDto = new Models.RankCompetition
+                    {
+                        Id = comp.Id,
+                        Name = comp.Name,
+                        Deadline = comp.Deadline
+                    };
+                    competitions.Add(compDto);
+                }
+                return competitions;
+            }
+            return new List<Models.RankCompetition>();
+        }
+        catch (Exception)
+        {
+            return new List<Models.RankCompetition>();
+        }
+    }
+
+    [HttpPost]
     [Route("GetTeamRank")]
     public List<Models.TeamRank> GetTeamRank(GetDefaultReq req)
     {
         if (CheckUser(req.UserId, req.Token))
         {
             var teamranks = new List<Models.TeamRank>();
-            var allGames = _context.TeamRanks;
+            var allGames = _context.TeamRanks.Where(x => x.RankCompetitionId == req.CompetitionId);
             foreach (var myGame in allGames)
             {
                 teamranks.Add(new Models.TeamRank

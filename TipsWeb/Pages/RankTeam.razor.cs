@@ -6,7 +6,17 @@ namespace TipsWeb.Pages
 {
     public partial class RankTeam : IDisposable
     {
-        private DateTime StartTid = new DateTime(2026,3,6,2,30,0);
+        private DateTime StartTid 
+        {
+            get 
+            {
+                return selectedCompetition != 0 ?
+                    Competitions.First(x => x.Id == selectedCompetition).Deadline :
+                    DateTime.MaxValue;
+            } 
+        }
+        private List<Models.RankCompetition> Competitions = new List<Models.RankCompetition> { };
+        private int selectedCompetition = 0;
         private DateTime CurrentTimeStamp = DateTime.Now;
         [Inject] IJSRuntime JS { get; set; }
         [Inject] public Proxy Proxy { get; set; }
@@ -19,7 +29,29 @@ namespace TipsWeb.Pages
         protected override async Task OnInitializedAsync()
         {
             objRef = DotNetObjectReference.Create(this);
-            await LoadTeams();
+            if (AppState.CurrentUser != null)
+            {
+                Competitions = await Proxy.GetRankCompetitions(new GetDefaultReq
+                {
+                    UserId = AppState.CurrentUser.Id,
+                    Token = AppState.CurrentUser.Token
+                });
+
+                selectedCompetition = Competitions.FirstOrDefault()?.Id ?? 0;
+                await OnCompetitionChanged();
+            }
+        }
+
+        private async Task OnCompetitionChanged()
+        {
+            if (selectedCompetition == 0)
+            {
+                Competitions = new List<Models.RankCompetition> { };
+            }
+            else
+            {
+                await LoadTeams();
+            }
         }
 
         protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -35,7 +67,8 @@ namespace TipsWeb.Pages
                 teams = await Proxy.GetUserRanks(new GetDefaultReq
                 {
                     UserId = AppState.CurrentUser.Id,
-                    Token = AppState.CurrentUser.Token
+                    Token = AppState.CurrentUser.Token,
+                    CompetitionId = selectedCompetition
                 });
             }
 

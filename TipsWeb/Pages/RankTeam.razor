@@ -2,7 +2,20 @@
 
 <div class="ranking-container">
     <h3>Tippa sluttabell</h3>
-    <p class="subtitle">Dra och släpp för att ordna hur du tror att sluttabellen kommer se ut. Deadline 2026-03-06 02.30</p>
+    <p class="subtitle">Dra och släpp för att ordna hur du tror att sluttabellen kommer se ut. Deadline @StartTid</p>
+    <div class="filters-container">
+        <div class="filter-section">
+            <label for="competition">Välj tävling:</label>
+            <select id="competition" class="form-select" @bind="selectedCompetition" @bind:after="OnCompetitionChanged">
+                @foreach (var category in Competitions)
+                {
+                    <option value="@category.Id">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
+    </div>
 
     <div class="teams-list" id="teamsList">
         @for (int i = 0; i < teams.Count; i++)
@@ -153,6 +166,50 @@
         margin-bottom: 2rem;
         font-size: 0.95rem;
     }
+
+    /* ===================================== */
+    /* FILTERS CONTAINER */
+    /* ===================================== */
+
+    .filters-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        display: flex;         
+        flex-direction: column; 
+        gap: 1.5rem;
+    }
+    .filter-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .filter-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+    .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        background-color: white;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
 
     /* ===================================== */
     /* TEAMS LIST */

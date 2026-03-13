@@ -6,17 +6,32 @@
         <h2>Ranking</h2>
     </div>
 
-    <div class="filter-section">
-        <label for="category">Välj liga:</label>
-        <select id="category" class="form-select" @bind="selectedLeague" @bind:after="OnCategoryChanged">
-            @foreach (var category in Leagues)
-            {
-                <option value="@category.Id">
-                    @category.Name
-                </option>
-            }
-        </select>
-        <div class="button-container">
+    <div class="filters-container">
+        <div class="filter-section">
+            <label for="competition">Välj tävling:</label>
+            <select id="competition" class="form-select" @bind="selectedCompetition" @bind:after="OnCompetitionChanged">
+                @foreach (var category in Competitions)
+                {
+                    <option value="@category.Id">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label for="league">Välj liga:</label>
+            <select id="league" class="form-select" @bind="selectedLeague" @bind:after="OnLeagueChanged">
+                @foreach (var category in Leagues)
+                {
+                    <option value="@category.Id">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="button-group">
             <button class="btn btn-primary" @onclick="JoinLeague">Gå med i liga</button>
             <button class="btn btn-secondary" @onclick="CreateLeague">Skapa liga</button>
         </div>
@@ -29,19 +44,22 @@
                 <table class="rank-table">
                     <thead>
                         <tr>
+                            <th class="order-header">#</th>
                             <th class="team-header">Lag</th>
-                            @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                            @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
                             {
                                 <th class="user-header">@userTeamRank.Team</th>
                             }
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach (var teamRank in rankLeague.TeamRanks)
+                        @for (int i = 0; i < rankLeague.TeamRanks.Count; i++)
                         {
+                            var teamRank = rankLeague.TeamRanks[i];
                             <tr>
+                                <td class="order-cell">@(i + 1)</td>
                                 <td class="team-cell">@teamRank.Team</td>
-                                @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                                @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
                                 {
                                     var userRank = userTeamRank.UserRanks.FirstOrDefault(ur => ur.TeamId == teamRank.TeamId);
                                     <td class="points-cell">
@@ -60,18 +78,62 @@
                     </tbody>
                     <tfoot>
                         <tr class="summary-row">
+                            <td class="summary-order"></td>
                             <td class="summary-label">Totalt</td>
-                            @foreach (var userTeamRank in rankLeague.UserTeamRanks)
+                            @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
                             {
-                                var totalPoints = userTeamRank.UserRanks.Sum(ur => ur.Points);
                                 <td class="summary-cell">
-                                    <span class="summary-points">@totalPoints</span>
+                                    <span class="summary-points">@userTeamRank.Points</span>
                                 </td>
                             }
                         </tr>
                     </tfoot>
                 </table>
             </div>
+        </div>
+
+        <!-- Individual User Tables -->
+        <div class="user-tables-container">
+            @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
+            {
+                <div class="user-table-wrapper">
+                    <h4 class="user-table-title">@userTeamRank.Team</h4>
+                    <table class="user-rank-table">
+                        <thead>
+                            <tr>
+                                <th class="user-order-header">#</th>
+                                <th class="user-team-header">Lag</th>
+                                <th class="user-points-header">Poäng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var orderedRanks = userTeamRank.UserRanks.OrderBy(ur => ur.Rank).ToList();
+                            }
+                            @for (int i = 0; i < orderedRanks.Count; i++)
+                            {
+                                var userRank = orderedRanks[i];
+                                var team = rankLeague.TeamRanks.FirstOrDefault(t => t.TeamId == userRank.TeamId);
+                                <tr>
+                                    <td class="user-order-cell">@(i + 1)</td>
+                                    <td class="user-team-cell">@(team?.Team ?? "Unknown")</td>
+                                    <td class="user-points-cell">
+                                        <span class="user-points">@userRank.Points</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="user-summary-row">
+                                <td colspan="2" class="user-summary-label">Totalt</td>
+                                <td class="user-summary-cell">
+                                    <span class="user-summary-points">@userTeamRank.Points</span>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            }
         </div>
     }
     else
@@ -82,9 +144,7 @@
     }
 </div>
 
-<!--                                                                                                     ========================================== -->
 <!-- POPUP MODAL - CREATE LEAGUE -->
-<!--                                                                                                     ========================================== -->
 @if (showCreateLeague)
 {
     <div class="modal-overlay" @onclick="ClosePopupCreate">
@@ -111,9 +171,7 @@
     </div>
 }
 
-<!--                                                                                                     ========================================== -->
 <!-- POPUP MODAL - JOIN LEAGUE -->
-<!--                                                                                                     ========================================== -->
 @if (showJoinLeague)
 {
     <div class="modal-overlay" @onclick="ClosePopupJoin">
@@ -141,9 +199,9 @@
 }
 
 <style>
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
     /* CONTAINER & LAYOUT */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
 
     .container {
         max-width: 1400px;
@@ -161,16 +219,25 @@
             margin: 0;
         }
 
-    /*                                                                                                   ===================================== */
-    /* FILTER SECTION */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
+    /* FILTERS CONTAINER */
+    /* ===================================== */
 
-    .filter-section {
+    .filters-container {
         background: white;
         padding: 1.5rem;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         margin-bottom: 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 1.5rem;
+        align-items: end;
+    }
+
+    .filter-section {
+        display: flex;
+        flex-direction: column;
     }
 
         .filter-section label {
@@ -178,11 +245,11 @@
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: #555;
+            font-size: 0.9rem;
         }
 
     .form-select {
         width: 100%;
-        max-width: 300px;
         padding: 0.75rem;
         border: 1px solid #ddd;
         border-radius: 5px;
@@ -190,7 +257,6 @@
         background-color: white;
         cursor: pointer;
         transition: border-color 0.3s;
-        margin-bottom: 1.5rem;
     }
 
         .form-select:focus {
@@ -198,15 +264,14 @@
             border-color: #667eea;
         }
 
-    .button-container {
+    .button-group {
         display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: 0.75rem;
     }
 
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
     /* BUTTONS */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
 
     .btn {
         padding: 0.75rem 1.5rem;
@@ -216,6 +281,7 @@
         font-weight: 600;
         cursor: pointer;
         transition: all 0.2s;
+        white-space: nowrap;
     }
 
     .btn-primary {
@@ -236,9 +302,9 @@
             background: #229954;
         }
 
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
     /* NO RESULTS */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
 
     .no-results {
         text-align: center;
@@ -248,9 +314,9 @@
         color: #999;
     }
 
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
     /* MODAL */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
 
     .modal-overlay {
         position: fixed;
@@ -345,19 +411,13 @@
         border-top: 1px solid #e0e0e0;
     }
 
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
     /* RANK LEAGUE TABLE */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
 
     .rank-league-container {
         margin-top: 2rem;
     }
-
-        .rank-league-container h3 {
-            color: #2c3e50;
-            margin-bottom: 1rem;
-            font-size: 1.5rem;
-        }
 
     .table-wrapper {
         overflow-x: auto;
@@ -386,10 +446,19 @@
             letter-spacing: 0.05em;
         }
 
+    .order-header {
+        min-width: 60px;
+        text-align: center;
+        position: sticky;
+        left: 0;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        z-index: 10;
+    }
+
     .team-header {
         min-width: 200px;
         position: sticky;
-        left: 0;
+        left: 60px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         z-index: 10;
     }
@@ -416,11 +485,26 @@
         padding: 1rem;
     }
 
+    .order-cell {
+        text-align: center;
+        font-weight: 700;
+        color: #667eea;
+        font-size: 1.1rem;
+        position: sticky;
+        left: 0;
+        background: white;
+        z-index: 5;
+    }
+
+    .rank-table tbody tr:hover .order-cell {
+        background: #f8f9fa;
+    }
+
     .team-cell {
         font-weight: 600;
         color: #2c3e50;
         position: sticky;
-        left: 0;
+        left: 60px;
         background: white;
         z-index: 5;
     }
@@ -448,9 +532,9 @@
         font-size: 1.2rem;
     }
 
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
     /* TABLE FOOTER - SUMMARY ROW */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
 
     .rank-table tfoot {
         background: #f8f9fa;
@@ -465,6 +549,13 @@
             padding: 1rem;
         }
 
+    .summary-order {
+        position: sticky;
+        left: 0;
+        background: #f8f9fa;
+        z-index: 5;
+    }
+
     .summary-label {
         font-weight: 700;
         color: #2c3e50;
@@ -472,7 +563,7 @@
         text-transform: uppercase;
         letter-spacing: 0.05em;
         position: sticky;
-        left: 0;
+        left: 60px;
         background: #f8f9fa;
         z-index: 5;
     }
@@ -491,9 +582,141 @@
         font-size: 1rem;
     }
 
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
+    /* USER TABLES */
+    /* ===================================== */
+
+    .user-tables-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .user-table-wrapper {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .user-table-title {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem;
+        margin: 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .user-rank-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .user-rank-table thead {
+            background: #f8f9fa;
+        }
+
+        .user-rank-table th {
+            padding: 0.75rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+    .user-order-header {
+        width: 50px;
+        text-align: center;
+    }
+
+    .user-team-header {
+        text-align: left;
+    }
+
+    .user-points-header {
+        text-align: center;
+        width: 80px;
+    }
+
+    .user-rank-table tbody tr {
+        border-bottom: 1px solid #ecf0f1;
+    }
+
+        .user-rank-table tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .user-rank-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+    .user-rank-table td {
+        padding: 0.75rem;
+    }
+
+    .user-order-cell {
+        text-align: center;
+        font-weight: 700;
+        color: #667eea;
+    }
+
+    .user-team-cell {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .user-points-cell {
+        text-align: center;
+    }
+
+    .user-points {
+        display: inline-block;
+        background: #27ae60;
+        color: white;
+        padding: 0.2rem 0.6rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+    }
+
+    .user-rank-table tfoot {
+        background: #f8f9fa;
+        border-top: 2px solid #667eea;
+    }
+
+    .user-summary-row td {
+        padding: 0.75rem;
+        font-weight: 700;
+    }
+
+    .user-summary-label {
+        color: #2c3e50;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+    }
+
+    .user-summary-cell {
+        text-align: center;
+    }
+
+    .user-summary-points {
+        display: inline-block;
+        background: #667eea;
+        color: white;
+        padding: 0.25rem 0.7rem;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
+    /* ===================================== */
     /* RESPONSIVE - MOBILE */
-    /*                                                                                                   ===================================== */
+    /* ===================================== */
 
     @@media (max-width: 768px) {
         .container {
@@ -503,26 +726,30 @@
         .header h2 {
             font-size: 1.5rem;
         }
-
-        .filter-section {
+        /* Filters stack on mobile */
+        .filters-container {
+            grid-template-columns: 1fr;
+            gap: 1rem;
             padding: 1rem;
         }
 
-        .form-select {
-            max-width: 100%;
-        }
-
-        .button-container {
+        .button-group {
             flex-direction: column;
-            gap: 0.5rem;
+            width: 100%;
         }
 
         .btn {
             width: 100%;
         }
-
-        .rank-league-container h3 {
-            font-size: 1.25rem;
+        /* Remove sticky positioning on mobile */
+        .order-header,
+        .team-header,
+        .order-cell,
+        .team-cell,
+        .summary-order,
+        .summary-label {
+            position: static;
+            left: auto;
         }
 
         .rank-table th,
@@ -531,12 +758,16 @@
             font-size: 0.85rem;
         }
 
+        .order-header {
+            min-width: 40px;
+        }
+
         .team-header {
-            min-width: 150px;
+            min-width: 100px;
         }
 
         .user-header {
-            min-width: 100px;
+            min-width: 80px;
         }
 
         .points {
@@ -555,6 +786,11 @@
         .summary-points {
             padding: 0.25rem 0.6rem;
             font-size: 0.85rem;
+        }
+
+        .user-tables-container {
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
         }
 
         .modal-content {

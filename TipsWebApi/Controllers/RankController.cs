@@ -13,7 +13,7 @@ public class RankController : ControllerBase
 {
     private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _context;
-    private DateTime StartTime = new DateTime(2026, 3, 6, 2, 30, 0);
+    //private DateTime StartTime = new DateTime(2026, 3, 6, 2, 30, 0);
 
     public RankController(ILogger<WeatherForecastController> logger, ApplicationDbContext context)
     {
@@ -28,8 +28,8 @@ public class RankController : ControllerBase
         if (CheckUser(req.UserId, req.Token))
         {
             var teamranks = new List<Models.TeamRank>();
-            var allGames = _context.TeamRanks;
-            var myGames = _context.UserRanks.Include(y => y.TeamRank).Where(x => x.UserId == req.UserId).ToList();
+            var allGames = _context.TeamRanks.Where(x => x.RankCompetitionId == req.CompetitionId);
+            var myGames = _context.UserRanks.Include(y => y.TeamRank).Where(x => x.UserId == req.UserId && x.TeamRank!.RankCompetitionId == req.CompetitionId).ToList();
             if (myGames.Any())
             {
                 foreach (var myGame in myGames)
@@ -37,7 +37,7 @@ public class RankController : ControllerBase
                     teamranks.Add(new Models.TeamRank
                     {
                         Id = myGame.Id,
-                        Team = myGame.TeamRank.Team,
+                        Team = myGame.TeamRank!.Team,
                         TeamId = myGame.TeamRank.Id,
                         Rank = myGame.Rank
                     });
@@ -106,7 +106,7 @@ public class RankController : ControllerBase
         if (CheckUser(req.UserId,req.Token))
         {
             var leagues = new List<Models.League>();
-            var userleagues = _context.UserRankLeagues.Include(y => y.RankLeague).Where(x => x.UserId == req.UserId).ToList();
+            var userleagues = _context.UserRankLeagues.Include(y => y.RankLeague).Where(x => x.UserId == req.UserId && x.RankLeague!.RankCompetitionId == req.CompetitionId).ToList();
             foreach (var ul in userleagues)
             {
                 if (ul.RankLeague != null)
@@ -119,12 +119,6 @@ public class RankController : ControllerBase
                     leagues.Add(leagueDto);
                 }
             }
-            //var worldLeagueDto = new Models.League
-            //{
-            //    Id = 0,
-            //    Name = "Världen",
-            //};
-            //leagues.Add(worldLeagueDto);
             return leagues;
         }
         return new List<Models.League>();
@@ -146,40 +140,15 @@ public class RankController : ControllerBase
 
             if (req.LeagueId == 0)
             {
-                ////LeaguId 0 är världsligan. Hämta de 10 bästa spelarna i världen och deras poäng, samt den aktuella användarens position och poäng
-                //var users = _context.Users.ToList();
-                //var position = 1;
-                //foreach (var user in users.OrderByDescending(x => x.Points).Take(10))
-                //{
-                //    var leagueDto = new LeagueRow
-                //    {
-                //        Position = position++,
-                //        UserName = user.UserName,
-                //        Team = user.Team,
-                //        Points = user.Points
-                //    };
-                //    leagueResult.Rows.Add(leagueDto);
-                //    leagueMembers.Add(user.Id);
-                //}
-                //if (leagueMembers.Contains(req.UserId) == false)
-                //{
-                //    //Aktuell användare är inte i topp 10, hämta dennes position och lägg till i resultatet
-                //    var index = users.FindIndex(x => x.Id == req.UserId);
-                //    var leagueDto = new LeagueRow
-                //    {
-                //        Position = index++,
-                //        UserName = users.First(x => x.Id == req.UserId).UserName,
-                //        Team = users.First(x => x.Id == req.UserId).Team,
-                //        Points = users.First(x => x.Id == req.UserId).Points
-                //    };
-                //}
             }
             else
             {
+                var competition = _context.RankCompetitions.First(x => x.Id == req.CompetitionId);
+                var league = _context.RankLeagues.First(x => x.Id == req.LeagueId);
                 var userleagues = _context.UserRankLeagues.Include(y => y.User).Where(x => x.RankLeagueId == req.LeagueId).ToList();
                 leagueMembers = userleagues.Select(x => x.UserId).ToList();
                 var position = 1;
-                foreach (var rank in _context.TeamRanks.OrderBy(x => x.Rank).ToList())
+                foreach (var rank in _context.TeamRanks.Where(y => y.RankCompetitionId == league.RankCompetitionId).OrderBy(x => x.Rank).ToList())
                 {
                     rankLeague.TeamRanks.Add(new Models.TeamRank
                     {
@@ -197,9 +166,9 @@ public class RankController : ControllerBase
                         UserName = ul.User.UserName,
                         UserRanks = new List<Models.UserRank>()
                     };
-                    if (DateTime.Now > StartTime)
+                    if (DateTime.Now > competition.Deadline)
                     {
-                        foreach (var ur in _context.UserRanks.Where(x => x.UserId == ul.UserId))
+                        foreach (var ur in _context.UserRanks.Include(y => y.TeamRank).Where(x => x.UserId == ul.UserId && x.TeamRank!.RankCompetitionId == league.RankCompetitionId))
                         {
                             var utrur = new Models.UserRank
                             {
@@ -210,6 +179,7 @@ public class RankController : ControllerBase
                             utr.UserRanks.Add(utrur);
                         }
                     }
+                    utr.Points = utr.UserRanks.Sum(x => x.Points);
                     rankLeague.UserTeamRanks.Add(utr);
                 }
             }
@@ -231,7 +201,8 @@ public class RankController : ControllerBase
                 var league = new Entities.RankLeague()
                 {
                     Name = req.LeagueName,
-                    Password = req.LeaguePassword
+                    Password = req.LeaguePassword,
+                    RankCompetitionId = req.RankCompetitionId
                 };
                 _context.RankLeagues.Add(league);
                 _context.SaveChanges();
@@ -254,16 +225,20 @@ public class RankController : ControllerBase
 
     [HttpPost]
     [Route("JoinRankLeague")]
-    public bool JoiRanknLeague(CreateOrJoinLeageReq req)
+    public bool JoinRankLeague(CreateOrJoinLeageReq req)
     {
         try
         {
             if (CheckUser(req.UserId, req.Token))
             {
 
-                var league = _context.RankLeagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword);
+                var league = _context.RankLeagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword && x.RankCompetitionId == req.RankCompetitionId);
                 if (league != null)
                 {
+                    if(_context.UserRankLeagues.Any(x => x.UserId == req.UserId && x.RankLeagueId == league.Id))
+                    {
+                        return false;
+                    }
                     var userleague = new Entities.UserRankLeague
                     {
                         RankLeagueId = league.Id,
@@ -280,6 +255,38 @@ public class RankController : ControllerBase
         catch (Exception)
         {
             return false;
+        }
+    }
+
+    [HttpPost]
+    [Route("GetRankCompetitions")]
+    public List<Models.RankCompetition> GetRankCompetitions(GetDefaultReq req)
+    {
+        try
+        {
+            if (CheckUser(req.UserId, req.Token))
+            {
+                var myOngoingCompetitionIds = _context.UserRankLeagues.Include(z => z.RankLeague).Where(x => x.UserId == req.UserId).Select(x => x.RankLeague!.RankCompetitionId).ToList();
+                var myCompetitions = _context.RankCompetitions.Where(x => x.Deadline > DateTime.Now || myOngoingCompetitionIds.Contains(x.Id)).OrderByDescending(y => y.Deadline).ToList();
+                
+                var competitions = new List<Models.RankCompetition>();
+                foreach (var comp in myCompetitions)
+                {
+                    var compDto = new Models.RankCompetition
+                    {
+                        Id = comp.Id,
+                        Name = comp.Name,
+                        Deadline = comp.Deadline
+                    };
+                    competitions.Add(compDto);
+                }
+                return competitions;
+            }
+            return new List<Models.RankCompetition>();
+        }
+        catch (Exception)
+        {
+            return new List<Models.RankCompetition>();
         }
     }
     private bool CheckUser(int userId, string token)
