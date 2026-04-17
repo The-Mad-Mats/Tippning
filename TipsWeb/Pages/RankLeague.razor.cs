@@ -92,7 +92,7 @@ namespace TipsWeb.Pages
                 Token = AppState.CurrentUser?.Token ?? "",
                 LeagueName = newLeague.Name,
                 LeaguePassword = newLeague.Password,
-                RankCompetitionId = selectedCompetition
+                CompetitionId = selectedCompetition
             };
             await Proxy.CreateRankLeague(league);
             await ClosePopupCreate();
@@ -124,7 +124,7 @@ namespace TipsWeb.Pages
                 Token = AppState.CurrentUser?.Token ?? "",
                 LeagueName = joinLeague.Name,
                 LeaguePassword = joinLeague.Password,
-                RankCompetitionId = selectedCompetition
+                CompetitionId = selectedCompetition
             };
             await Proxy.JoinRankLeague(league);
             await ClosePopupJoin();

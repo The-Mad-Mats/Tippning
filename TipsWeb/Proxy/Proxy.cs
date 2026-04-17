@@ -75,6 +75,21 @@ namespace TipsWeb
         }
 
         //Matchtipset
+        public async Task<List<Competition>> GetCompetitions(GetDefaultReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Tips/GetCompetitions", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<Competition>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+
         public async Task<List<League>> GetUserleague(GetDefaultReq content)
         {
             try
@@ -264,6 +279,20 @@ namespace TipsWeb
         }
 
         //Admin
+        public async Task<List<Competition>> GetAdminCompetitions(GetDefaultReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Admin/GetCompetitions", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<Competition>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
         public async Task<List<RankCompetition>> GetAdminRankCompetitions(GetDefaultReq content)
         {
             try

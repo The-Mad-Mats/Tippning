@@ -3,6 +3,19 @@
 
 <div class="matches-container">
     <h3>Matcher</h3>
+    <div class="filters-container">
+        <div class="filter-section">
+            <label for="competition">Välj tävling:</label>
+            <select id="competition" class="form-select" @bind="selectedCompetition" @bind:after="OnCompetitionChanged">
+                @foreach (var competition in Competitions)
+                {
+                    <option value="@competition.Id">
+                        @competition.Name
+                    </option>
+                }
+            </select>
+        </div>
+    </div>
 
     <div class="matches-list">
         @foreach (var item in Games)
@@ -73,6 +86,50 @@
         gap: 1.5rem;
         margin-bottom: 2rem;
     }
+
+    /* ===================================== */
+    /* FILTERS CONTAINER */
+    /* ===================================== */
+
+    .filters-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .filter-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .filter-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+    .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        background-color: white;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
 
     /* ===================================== */
     /* MATCH CARD */

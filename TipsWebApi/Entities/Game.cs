@@ -13,7 +13,11 @@ namespace TipsWebApi.Entities
         public string Team2 { get; set; } = "";
         public int? Team1Score { get; set; } = 0;
         public int? Team2Score { get; set; } = 0;
+        public int CompetitionId { get; set; }
+
         public virtual ICollection<UserGame>? UserGames { get; set; }
+        public virtual Competition Competition { get; set; } = null!;
+
 
     }
 }

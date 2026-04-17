@@ -4,6 +4,7 @@
     {
         public int UserId { get; set; }
         public string Token { get; set; } = "";
+        public int CompetitionId { get; set; }
         public DateTime Date { get; set; } = DateTime.Now;
         public string HomeTeam { get; set; } = "";
         public string AwayTeam { get; set; } = "";

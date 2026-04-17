@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using TipsWeb.Models;
 
 namespace TipsWeb.Pages
@@ -7,17 +8,47 @@ namespace TipsWeb.Pages
     {
         [Inject] public Proxy Proxy { get; set; }
         private User user = new();
-
         private List<Game> Games { get; set; } = new();
+        private List<Models.Competition> Competitions = new List<Models.Competition> { };
+        private int selectedCompetition = 0;
+        //private DotNetObjectReference<RankTeam> objRef;
+
 
         protected override async Task OnInitializedAsync()
         {
-            user = AppState.CurrentUser;
-            if (user != null)
+            //objRef = DotNetObjectReference.Create(this);
+            if (AppState.CurrentUser != null)
             {
-                Games = await Proxy.GetUserGames(new GetDefaultReq { UserId = user.Id, Token = user.Token });
-            }
+                Competitions = await Proxy.GetCompetitions(new GetDefaultReq
+                {
+                    UserId = AppState.CurrentUser.Id,
+                    Token = AppState.CurrentUser.Token
+                });
 
+                selectedCompetition = Competitions.FirstOrDefault()?.Id ?? 0;
+                await OnCompetitionChanged();
+            }
+        }
+
+        private async Task OnCompetitionChanged()
+        {
+            if (selectedCompetition == 0)
+            {
+                Competitions = new List<Models.Competition> { };
+            }
+            else
+            {
+                user = AppState.CurrentUser;
+                if (user != null)
+                {
+                    Games = await Proxy.GetUserGames(new GetDefaultReq 
+                    { 
+                        UserId = user.Id, 
+                        Token = user.Token, 
+                        CompetitionId = selectedCompetition 
+                    });
+                }
+            }
         }
 
         private void Spara()
@@ -42,26 +73,6 @@ namespace TipsWeb.Pages
                 }
             }
             Proxy.SaveGames(saveGamesReq);
-            //Items.Add(new GameUser
-            //{
-            //    Team1Flag = "images/default.png",
-            //    Team1 = $"Item {Items.Count + 1}",
-            //    Team2Flag = "images/default.png",
-            //    Team2 = "New item",
-            //    Team1Score = 0,
-            //    Team2Score = 0
-            //});
         }
-
-        //public class ItemModel
-        //{
-        //    public DateTime StartTime = DateTime.MinValue;
-        //    public string Team1Flag { get; set; } = "";
-        //    public string Team1 { get; set; } = "";
-        //    public string Team2Flag { get; set; } = "";
-        //    public string Team2 { get; set; } = "";
-        //    public int Team1Score { get; set; } = 0;
-        //    public int Team2Score { get; set; } = 0;
-        //}
     }
 }

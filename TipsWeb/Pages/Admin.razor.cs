@@ -14,6 +14,9 @@ namespace TipsWeb.Pages
         private string calculationResult = string.Empty;
         private bool showPopup = false;
         private Game newGame = new();
+        private List<Models.Competition> Competitions = new List<Models.Competition> { };
+        private int selectedCompetition = 0;
+
         // ========================================
         // LIFECYCLE METHODS
         // ========================================
@@ -21,18 +24,39 @@ namespace TipsWeb.Pages
         {
             user = AppState.CurrentUser;
 
-            await LoadInitialGames();
+            if (user != null)
+            {
+                Competitions = await _proxy.GetAdminCompetitions(new GetDefaultReq
+                {
+                    UserId = AppState.CurrentUser.Id,
+                    Token = AppState.CurrentUser.Token
+                });
+                selectedCompetition = Competitions.FirstOrDefault()?.Id ?? 0;
+                await OnCompetitionChanged();
+            }
         }
         // ========================================
         // DATA METHODS
         // ========================================
-        private async Task LoadInitialGames()
+        private async Task LoadGames()
         {
             if (user != null)
             {
-                games = await _proxy.GetGames(new GetGamesReq { UserId = user.Id, Token = user.Token });
+                games = await _proxy.GetGames(new GetGamesReq { UserId = user.Id, Token = user.Token, CompetitionId = selectedCompetition });
             }
         }
+        private async Task OnCompetitionChanged()
+        {
+            if (selectedCompetition == 0)
+            {
+                Competitions = new List<Models.Competition> { };
+            }
+            else
+            {
+                await LoadGames();
+            }
+        }
+
         // ========================================
         // EVENT HANDLERS
         // ========================================
@@ -48,7 +72,8 @@ namespace TipsWeb.Pages
             {
                 UserId = user.Id,
                 Token = user.Token,
-                Games = selectedGames
+                Games = selectedGames,
+                CompetitionId = selectedCompetition
             };
             await _proxy.CalculateResul(calcResultReq);
         }
@@ -83,13 +108,14 @@ namespace TipsWeb.Pages
             {
                 UserId = AppState.CurrentUser?.Id ?? 0,
                 Token = AppState.CurrentUser?.Token ?? "",
+                CompetitionId = selectedCompetition,
                 Date = newGame.GameTime,
                 HomeTeam = newGame.Team1,
                 AwayTeam = newGame.Team2
             };
             await _proxy.AddGame(game);
             ClosePopup();
-            await LoadInitialGames();
+            await LoadGames();
         }
     }
 }

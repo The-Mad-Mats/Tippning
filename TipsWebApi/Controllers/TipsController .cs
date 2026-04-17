@@ -11,15 +11,45 @@ namespace TipsWebApi.Controllers;
 [Route("[controller]")]
 public class TipsController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _context;
 
-    public TipsController(ILogger<WeatherForecastController> logger, ApplicationDbContext context)
+    public TipsController(ApplicationDbContext context)
     {
-        _logger = logger;
         _context = context;
     }
-    
+
+    [HttpPost]
+    [Route("GetCompetitions")]
+    public List<Models.Competition> GetCompetitions(GetDefaultReq req)
+    {
+        try
+        {
+            if (CheckUser(req.UserId, req.Token))
+            {
+                var myOngoingCompetitionIds = _context.UserLeagues.Include(z => z.League).Where(x => x.UserId == req.UserId).Select(x => x.League!.CompetitionId).ToList();
+                var myCompetitions = _context.Competitions.Where(x => x.Deadline > DateTime.Now || myOngoingCompetitionIds.Contains(x.Id)).OrderByDescending(y => y.Deadline).ToList();
+
+                var competitions = new List<Models.Competition>();
+                foreach (var comp in myCompetitions)
+                {
+                    var compDto = new Models.Competition
+                    {
+                        Id = comp.Id,
+                        Name = comp.Name,
+                        Deadline = comp.Deadline
+                    };
+                    competitions.Add(compDto);
+                }
+                return competitions;
+            }
+            return new List<Models.Competition>();
+        }
+        catch (Exception)
+        {
+            return new List<Models.Competition>();
+        }
+    }
+
     [HttpPost]
     [Route("GetUserLeagues")]
     public List<Models.League> GetUserLeagues(GetDefaultReq req)
@@ -27,7 +57,7 @@ public class TipsController : ControllerBase
         if (CheckUser(req.UserId,req.Token))
         {
             var leagues = new List<Models.League>();
-            var userleagues = _context.UserLeagues.Include(y => y.League).Where(x => x.UserId == req.UserId).ToList();
+            var userleagues = _context.UserLeagues.Include(y => y.League).Where(x => x.UserId == req.UserId && x.League!.CompetitionId == req.CompetitionId).ToList();
             foreach (var ul in userleagues)
             {
                 if (ul.League != null)
@@ -58,8 +88,8 @@ public class TipsController : ControllerBase
         if (CheckUser(req.UserId, req.Token))
         {
             var games = new List<Models.Game>();
-            var allGames = _context.Games;
-            var myGames = _context.UserGames.Where(x => x.UserId == req.UserId).ToList();
+            var allGames = _context.Games.Where(x => x.CompetitionId == req.CompetitionId);
+            var myGames = _context.UserGames.Include(y => y.Game).Where(x => x.UserId == req.UserId && x.Game!.CompetitionId == req.CompetitionId).ToList();
             foreach (var myGame in myGames)
             {
                 allGames.Single(x => x.Id == myGame.GameId).UserGames!.Add(myGame);
@@ -97,30 +127,30 @@ public class TipsController : ControllerBase
             if (req.LeagueId == 0)
             {
                 //LeaguId 0 är världsligan. Hämta de 10 bästa spelarna i världen och deras poäng, samt den aktuella användarens position och poäng
-                var users = _context.Users.ToList();
+                var userComps = _context.UserCompetitions.Include(x => x.User).Where(y => y.CompetitionId == req.CompetitionId).OrderByDescending(x => x.Points).Take(10).ToList();
                 var position = 1;
-                foreach (var user in users.OrderByDescending(x => x.Points).Take(10))
+                foreach (var userComp in userComps)
                 {
                     var leagueDto = new LeagueRow
                     {
                         Position = position++,
-                        UserName = user.UserName,
-                        Team = user.Team,
-                        Points = user.Points
+                        UserName = userComp.User.UserName,
+                        Team = userComp.User.Team,
+                        Points = userComp.Points
                     };
                     leagueResult.Rows.Add(leagueDto);
-                    leagueMembers.Add(user.Id);
+                    leagueMembers.Add(userComp.User.Id);
                 }
                 if(leagueMembers.Contains(req.UserId) == false)
                 {
                     //Aktuell användare är inte i topp 10, hämta dennes position och lägg till i resultatet
-                    var index = users.FindIndex(x => x.Id == req.UserId);
+                    var index = userComps.FindIndex(x => x.Id == req.UserId);
                     var leagueDto = new LeagueRow
                     {
                         Position = index++,
-                        UserName = users.First(x => x.Id == req.UserId).UserName,
-                        Team = users.First(x => x.Id == req.UserId).Team,
-                        Points = users.First(x => x.Id == req.UserId).Points
+                        UserName = userComps.First(x => x.Id == req.UserId).User.UserName,
+                        Team = userComps.First(x => x.Id == req.UserId).User.Team,
+                        Points = userComps.First(x => x.Id == req.UserId).Points
                     };
                 }
             }
@@ -128,8 +158,9 @@ public class TipsController : ControllerBase
             {
                 var userleagues = _context.UserLeagues.Include(y => y.User).Where(x => x.LeagueId == req.LeagueId).ToList();
                 leagueMembers = userleagues.Select(x => x.UserId).ToList();
+                var userComps = _context.UserCompetitions.Include(y => y.User).Where(x => x.CompetitionId == req.CompetitionId && leagueMembers.Contains(x.UserId)).ToList();
                 var position = 1;
-                foreach (var ul in userleagues.OrderByDescending(x => x.User.Points))
+                foreach (var ul in userComps.OrderByDescending(x => x.Points))
                 {
                     if (ul.User != null)
                     {
@@ -138,13 +169,13 @@ public class TipsController : ControllerBase
                             Position = position++,
                             UserName = ul.User.UserName,
                             Team = ul.User.Team,
-                            Points = ul.User.Points
+                            Points = ul.Points
                         };
                         leagueResult.Rows.Add(leagueDto);
                     }
                 }
                 leagueResult.Matches = new List<Match>();
-                var games = _context.Games.Include(x => x.UserGames).ThenInclude(y => y.User).ToList();
+                var games = _context.Games.Include(x => x.UserGames).ThenInclude(y => y.User).Where(z => z.CompetitionId == req.CompetitionId).ToList();
                 foreach (var game in games.Where(x => x.GameTime < DateTime.Now))
                 {
                     var match = new Match
@@ -230,7 +261,8 @@ public class TipsController : ControllerBase
                 var league = new Entities.League()
                 {
                     Name = req.LeagueName,
-                    Password = req.LeaguePassword
+                    Password = req.LeaguePassword,
+                    CompetitionId = req.CompetitionId
                 };
                 _context.Leagues.Add(league);
                 _context.SaveChanges();
@@ -241,6 +273,18 @@ public class TipsController : ControllerBase
                 };
                 _context.UserLeagues.Add(userleague);
                 _context.SaveChanges();
+                var ucompetition = _context.UserCompetitions.FirstOrDefault(x => x.UserId == req.UserId && x.CompetitionId == req.CompetitionId);
+                if (ucompetition == null)
+                {
+                    var usercompetition = new Entities.UserCompetition()
+                    {
+                        UserId = req.UserId,
+                        CompetitionId = req.CompetitionId,
+                        Points = 0
+                    };
+                    _context.UserCompetitions.Add(usercompetition);
+                    _context.SaveChanges();
+                }
                 return true;
             }
             return false;
@@ -260,7 +304,7 @@ public class TipsController : ControllerBase
             if (CheckUser(req.UserId, req.Token))
             {
 
-                var league = _context.Leagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword);
+                var league = _context.Leagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword && x.CompetitionId == req.CompetitionId);
                 if (league != null)
                 {
                     var userleague = new Entities.UserLeague
@@ -270,6 +314,19 @@ public class TipsController : ControllerBase
                     };
                     _context.UserLeagues.Add(userleague);
                     _context.SaveChanges();
+                    var ucompetition = _context.UserCompetitions.FirstOrDefault(x => x.UserId == req.UserId && x.CompetitionId == req.CompetitionId);
+                    if (ucompetition == null)
+                    {
+
+                        var usercompetition = new Entities.UserCompetition()
+                        {
+                            UserId = req.UserId,
+                            CompetitionId = req.CompetitionId,
+                            Points = 0
+                        };
+                        _context.UserCompetitions.Add(usercompetition);
+                        _context.SaveChanges();
+                    }
                     return true;
                 }
                 return true;

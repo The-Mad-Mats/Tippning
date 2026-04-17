@@ -9,6 +9,9 @@ namespace TipsWeb.Pages
         private LeagueResult LeagueResult = new();
         private List<Models.League> Leagues = new List<Models.League> { };
         private int selectedLeague = 0;
+        private List<Models.Competition> Competitions = new List<Models.Competition> { };
+        private int selectedCompetition = 0;
+
         private User user = new();
         private Models.League newLeague = new();
         private Models.League joinLeague = new();
@@ -20,24 +23,34 @@ namespace TipsWeb.Pages
             user = AppState.CurrentUser;
             if (user != null)
             {
-                Leagues = await Proxy.GetUserleague(new GetDefaultReq { UserId = user.Id, Token = user.Token });
-                selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
-                await OnCategoryChanged();
+                Competitions = await Proxy.GetCompetitions(new GetDefaultReq { UserId = user.Id, Token = user.Token });
+                selectedCompetition = Competitions.FirstOrDefault()?.Id ?? 0;
+                await OnCompetitionChanged();
+
             }
         }
-        private async Task OnCategoryChanged()
+        private async Task OnCompetitionChanged()
         {
-            //if (selectedLeague == 0)
-            //{
-            //    LeagueResult.Rows = new List<LeagueRow>();
-            //    LeagueResult.Matches = new List<Match>();
-            //}
-            //else
-            //{
-                var leagueId = Leagues.FirstOrDefault(l => l.Id == selectedLeague)?.Id ?? 0;
-                LeagueResult = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token });
-            //}
+            if (selectedCompetition == 0)
+            {
+                Competitions = new List<Models.Competition> { };
+            }
+            else
+            {
+                if (user != null)
+                {
+                    Leagues = await Proxy.GetUserleague(new GetDefaultReq { UserId = user.Id, Token = user.Token, CompetitionId = selectedCompetition });
+                    selectedLeague = Leagues.FirstOrDefault()?.Id ?? 0;
+                    await OnLeagueChanged();
+                }
+            }
         }
+
+        private async Task OnLeagueChanged()
+        {
+            var leagueId = Leagues.FirstOrDefault(l => l.Id == selectedLeague)?.Id ?? 0;
+            LeagueResult = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token, CompetitionId = selectedCompetition });
+    }
 
         private async Task JoinLeague()
         {
@@ -55,10 +68,11 @@ namespace TipsWeb.Pages
             newLeague = new Models.League();
             showCreateLeague = true;
         }
-        private void ClosePopupCreate()
+        private async Task ClosePopupCreate()
         {
             showCreateLeague = false;
             newLeague = new Models.League();
+            await OnLeagueChanged();
         }
         private async Task SaveLeague()
         {
@@ -72,7 +86,8 @@ namespace TipsWeb.Pages
                 UserId = AppState.CurrentUser?.Id ?? 0,
                 Token = AppState.CurrentUser?.Token ?? "",
                 LeagueName = newLeague.Name,
-                LeaguePassword = newLeague.Password
+                LeaguePassword = newLeague.Password,
+                CompetitionId = selectedCompetition
             };
             await Proxy.CreateLeague(league);
             ClosePopupCreate();
@@ -85,10 +100,11 @@ namespace TipsWeb.Pages
             newLeague = new Models.League();
             showJoinLeague = true;
         }
-        private void ClosePopupJoin()
+        private async Task ClosePopupJoin()
         {
             showJoinLeague = false;
             joinLeague = new Models.League();
+            await OnLeagueChanged();
         }
         private async Task SaveJoinLeague()
         {

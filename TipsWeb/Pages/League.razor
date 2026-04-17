@@ -6,9 +6,43 @@
         <h2>Tabell</h2>
     </div>
 
+
+
+    <div class="filters-container">
+        <div class="filter-section">
+            <label for="competition">Välj tävling:</label>
+            <select id="competition" class="form-select" @bind="selectedCompetition" @bind:after="OnCompetitionChanged">
+                @foreach (var category in Competitions)
+                {
+                    <option value="@category.Id">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="filter-section">
+            <label for="league">Välj liga:</label>
+            <select id="league" class="form-select" @bind="selectedLeague" @bind:after="OnLeagueChanged">
+                @foreach (var category in Leagues)
+                {
+                    <option value="@category.Id">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" @onclick="JoinLeague">Gå med i liga</button>
+            <button class="btn btn-third" @onclick="CreateLeague">Skapa liga</button>
+        </div>
+    </div>
+
+@* 
     <div class="filter-section">
         <label for="category">Välj liga:</label>
-        <select id="category" class="form-select" @bind="selectedLeague" @bind:after="OnCategoryChanged">
+        <select id="category" class="form-select" @bind="selectedLeague" @bind:after="OnLeagueChanged">
             @foreach (var category in Leagues)
             {
                 <option value="@category.Id">
@@ -20,7 +54,7 @@
             <button class="btn btn-primary" @onclick="JoinLeague">Gå med i liga</button>
             <button class="btn btn-secondary" @onclick="CreateLeague">Skapa liga</button>
         </div>
-    </div>
+    </div> *@
 
     @if (LeagueResult.Rows.Any())
     {
@@ -134,7 +168,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" @onclick="ClosePopupJoin">Avbryt</button>
-                <button class="btn btn-primary" @onclick="SaveJoinLeague">Spara liga</button>
+                <button class="btn btn-primary" @onclick="SaveJoinLeague">Gå med i liga</button>
             </div>
         </div>
     </div>
@@ -162,15 +196,24 @@
         }
 
     /* ===================================== */
-    /* FILTER SECTION */
+    /* FILTERS CONTAINER */
     /* ===================================== */
 
-    .filter-section {
+    .filters-container {
         background: white;
         padding: 1.5rem;
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         margin-bottom: 1.5rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        gap: 1.5rem;
+        align-items: end;
+    }
+
+    .filter-section {
+        display: flex;
+        flex-direction: column;
     }
 
         .filter-section label {
@@ -178,11 +221,11 @@
             margin-bottom: 0.5rem;
             font-weight: 600;
             color: #555;
+            font-size: 0.9rem;
         }
 
     .form-select {
         width: 100%;
-        max-width: 300px;
         padding: 0.75rem;
         border: 1px solid #ddd;
         border-radius: 5px;
@@ -190,7 +233,6 @@
         background-color: white;
         cursor: pointer;
         transition: border-color 0.3s;
-        margin-bottom: 1.5rem;
     }
 
         .form-select:focus {
@@ -198,10 +240,9 @@
             border-color: #667eea;
         }
 
-    .button-container {
+    .button-group {
         display: flex;
-        gap: 1rem;
-        margin-top: 1rem;
+        gap: 0.75rem;
     }
 
     /* ===================================== */
@@ -219,23 +260,31 @@
     }
 
     .btn-primary {
-        background: #667eea;
-        color: white;
-    }
-
-        .btn-primary:hover {
-            background: #5568d3;
-        }
-
-    .btn-secondary {
         background: #27ae60;
         color: white;
     }
 
-        .btn-secondary:hover {
+        .btn-primary:hover {
             background: #229954;
         }
 
+    .btn-secondary {
+        background: #e74c3c;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background: #c0392b;
+        }
+
+    .btn-third {
+        background: #667eea;
+        color: white;
+    }
+
+        .btn-third:hover {
+            background: #5568d3;
+        }
     /* ===================================== */
     /* LEAGUE RESULTS */
     /* ===================================== */
@@ -537,7 +586,17 @@
         .form-select {
             max-width: 100%;
         }
+        /* Filters stack on mobile */
+        .filters-container {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+            padding: 1rem;
+        }
 
+        .button-group {
+            flex-direction: column;
+            width: 100%;
+        }
         .button-container {
             flex-direction: column;
             gap: 0.5rem;

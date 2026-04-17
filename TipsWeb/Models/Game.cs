@@ -3,6 +3,7 @@
     public class Game
     {
         public int Id { get; set; }
+        public int CompetitionId { get; set; }
         public DateTime GameTime { get; set; } = DateTime.MinValue;
         public string Team1Flag { get; set; } = "";
         public string Team1 { get; set; } = "";

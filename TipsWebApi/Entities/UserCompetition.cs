@@ -3,17 +3,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace TipsWebApi.Entities
 {
-    [Table("league")]
-    public class League
+    [Table("usercompetition")]
+    public class UserCompetition
     {
         [Key]
         public int Id { get; set; }
-        public string Name { get; set; } = "";
-        public string Password { get; set; } = "";
+        public int UserId { get; set; }
         public int CompetitionId { get; set; }
-
-        public virtual ICollection<UserLeague>? UserLeagues { get; set; }
+        public int Points { get; set; }
+        public virtual User User { get; set; } = null!;
         public virtual Competition Competition { get; set; } = null!;
-
     }
 }

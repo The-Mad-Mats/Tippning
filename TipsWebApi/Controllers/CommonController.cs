@@ -11,12 +11,10 @@ namespace TipsWebApi.Controllers;
 [Route("[controller]")]
 public class CommonController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _context;
 
-    public CommonController(ILogger<WeatherForecastController> logger, ApplicationDbContext context)
+    public CommonController(ApplicationDbContext context)
     {
-        _logger = logger;
         _context = context;
     }
 
@@ -27,6 +25,21 @@ public class CommonController : ControllerBase
         var user = _context.Users.FirstOrDefault(x => x.UserName == loginReq.Username && x.Password == loginReq.Password);
         if (user != null)
         {
+            var competitions = _context.Competitions.Where(x => x.Deadline > DateTime.Now).ToList();
+            var userCompetitions = _context.UserCompetitions.Where(x => x.UserId == user.Id).ToList();
+            foreach (var competition in competitions)
+            {
+                if (!userCompetitions.Any(x => x.CompetitionId == competition.Id))
+                {
+                    var userCompetition = new UserCompetition()
+                    {
+                        UserId = user.Id,
+                        CompetitionId = competition.Id,
+                        Points = 0
+                    };
+                    _context.UserCompetitions.Add(userCompetition);
+                }
+            }
             var userDto = new Models.User
             {
                 Id = user.Id,

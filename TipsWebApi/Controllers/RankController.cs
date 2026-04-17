@@ -11,13 +11,11 @@ namespace TipsWebApi.Controllers;
 [Route("[controller]")]
 public class RankController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _context;
     //private DateTime StartTime = new DateTime(2026, 3, 6, 2, 30, 0);
 
-    public RankController(ILogger<WeatherForecastController> logger, ApplicationDbContext context)
+    public RankController(ApplicationDbContext context)
     {
-        _logger = logger;
         _context = context;
     }
 
@@ -202,7 +200,7 @@ public class RankController : ControllerBase
                 {
                     Name = req.LeagueName,
                     Password = req.LeaguePassword,
-                    RankCompetitionId = req.RankCompetitionId
+                    RankCompetitionId = req.CompetitionId
                 };
                 _context.RankLeagues.Add(league);
                 _context.SaveChanges();
@@ -232,7 +230,7 @@ public class RankController : ControllerBase
             if (CheckUser(req.UserId, req.Token))
             {
 
-                var league = _context.RankLeagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword && x.RankCompetitionId == req.RankCompetitionId);
+                var league = _context.RankLeagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword && x.RankCompetitionId == req.CompetitionId);
                 if (league != null)
                 {
                     if(_context.UserRankLeagues.Any(x => x.UserId == req.UserId && x.RankLeagueId == league.Id))

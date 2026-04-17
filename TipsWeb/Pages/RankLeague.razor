@@ -33,7 +33,7 @@
 
         <div class="button-group">
             <button class="btn btn-primary" @onclick="JoinLeague">Gå med i liga</button>
-            <button class="btn btn-secondary" @onclick="CreateLeague">Skapa liga</button>
+            <button class="btn btn-third" @onclick="CreateLeague">Skapa liga</button>
         </div>
     </div>
 
@@ -192,7 +192,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-secondary" @onclick="ClosePopupJoin">Avbryt</button>
-                <button class="btn btn-primary" @onclick="SaveJoinLeague">Gå med</button>
+                <button class="btn btn-primary" @onclick="SaveJoinLeague">Gå med i liga</button>
             </div>
         </div>
     </div>
@@ -285,23 +285,31 @@
     }
 
     .btn-primary {
-        background: #667eea;
-        color: white;
-    }
-
-        .btn-primary:hover {
-            background: #5568d3;
-        }
-
-    .btn-secondary {
         background: #27ae60;
         color: white;
     }
 
-        .btn-secondary:hover {
+        .btn-primary:hover {
             background: #229954;
         }
 
+    .btn-secondary {
+        background: #e74c3c;
+        color: white;
+    }
+
+        .btn-secondary:hover {
+            background: #c0392b;
+        }
+
+    .btn-third {
+        background: #667eea;
+        color: white;
+    }
+
+        .btn-third:hover {
+            background: #5568d3;
+        }
     /* ===================================== */
     /* NO RESULTS */
     /* ===================================== */

@@ -66,10 +66,32 @@ public class ApplicationDbContext : DbContext
             .HasForeignKey(ul => ul.RankCompetitionId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<League>()
+            .HasOne(ul => ul.Competition)
+            .WithMany(u => u.Leagues)
+            .HasForeignKey(ul => ul.CompetitionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Game>()
+            .HasOne(ul => ul.Competition)
+            .WithMany(u => u.Games)
+            .HasForeignKey(ul => ul.CompetitionId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<UserCompetition>()
+            .HasOne(ul => ul.Competition)
+            .WithMany(l => l.UserCompetitions)
+            .HasForeignKey(ul => ul.CompetitionId)
+            .OnDelete(DeleteBehavior.Restrict); // or Cascade, depending on your needs
+
+        modelBuilder.Entity<UserCompetition>()
+            .HasOne(ul => ul.User)
+            .WithMany(u => u.UserCompetitions)
+            .HasForeignKey(ul => ul.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
-    public DbSet<TipsWebApi.Models.WeatherForecast> WeatherForecasts { get; set; }
     public DbSet<User> Users { get; set; }
     public DbSet<UserLeague> UserLeagues { get; set; }
     public DbSet<UserGame> UserGames { get; set; }
@@ -80,4 +102,6 @@ public class ApplicationDbContext : DbContext
     public DbSet<RankLeague> RankLeagues { get; set; }
     public DbSet<TeamRank> TeamRanks { get; set; }
     public DbSet<RankCompetition> RankCompetitions { get; set; }
+    public DbSet<Competition> Competitions { get; set; }
+    public DbSet<UserCompetition> UserCompetitions { get; set; }
 }

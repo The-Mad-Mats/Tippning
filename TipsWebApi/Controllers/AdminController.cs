@@ -11,13 +11,42 @@ namespace TipsWebApi.Controllers;
 [Route("[controller]")]
 public class AdminController : ControllerBase
 {
-    private readonly ILogger<WeatherForecastController> _logger;
     private readonly ApplicationDbContext _context;
 
-    public AdminController(ILogger<WeatherForecastController> logger, ApplicationDbContext context)
+    public AdminController(ApplicationDbContext context)
     {
-        _logger = logger;
         _context = context;
+    }
+
+    [HttpPost]
+    [Route("GetCompetitions")]
+    public List<Models.Competition> GetCompetitions(GetDefaultReq req)
+    {
+        try
+        {
+            if (CheckUser(req.UserId, req.Token))
+            {
+                var myCompetitions = _context.Competitions.OrderByDescending(y => y.Deadline).ToList();
+
+                var competitions = new List<Models.Competition>();
+                foreach (var comp in myCompetitions)
+                {
+                    var compDto = new Models.Competition
+                    {
+                        Id = comp.Id,
+                        Name = comp.Name,
+                        Deadline = comp.Deadline
+                    };
+                    competitions.Add(compDto);
+                }
+                return competitions;
+            }
+            return new List<Models.Competition>();
+        }
+        catch (Exception)
+        {
+            return new List<Models.Competition>();
+        }
     }
 
     [HttpPost]
@@ -31,6 +60,7 @@ public class AdminController : ControllerBase
             {
                 var game = new Entities.Game()
                 {
+                    CompetitionId = req.CompetitionId,
                     GameTime = req.Date,
                     Team1 = req.HomeTeam,
                     Team2 = req.AwayTeam,
@@ -43,6 +73,7 @@ public class AdminController : ControllerBase
                 var newGame = new Models.Game()
                 {
                     Id = addedGame.Id,
+                    CompetitionId = addedGame.CompetitionId,
                     GameTime = addedGame.GameTime,
                     Team1 = addedGame.Team1,
                     Team2 = addedGame.Team2,
@@ -70,7 +101,7 @@ public class AdminController : ControllerBase
             try
             {
                 var games = new List<Models.Game>();
-                games = _context.Games.AsNoTracking().Select(g => new Models.Game()
+                games = _context.Games.Where(x => x.CompetitionId == req.CompetitionId).AsNoTracking().Select(g => new Models.Game()
                 {
                     Id = g.Id,
                     GameTime = g.GameTime,
@@ -117,8 +148,8 @@ public class AdminController : ControllerBase
                                 {
                                     if (userGame.Points != null)
                                     {
-                                        var currentUser = _context.Users.First(x => x.Id == userGame.UserId);
-                                        currentUser.Points -= userGame.Points.Value;
+                                        var currentUser = _context.Users.Include(y => y.UserCompetitions.Where(z => z.CompetitionId == req.CompetitionId)).First(x => x.Id == userGame.UserId);
+                                        currentUser.UserCompetitions!.First().Points -= userGame.Points.Value;
                                         userGame.Points = 0; // Reset points before recalculation
                                     }
                                 }
@@ -154,8 +185,8 @@ public class AdminController : ControllerBase
                                     points += 2; // Bonus for perfect tip
                                 }
                                 userGame.Points = points;
-                                var currentUser = _context.Users.First(x => x.Id == userGame.UserId);
-                                currentUser.Points += points;
+                                var currentUser = _context.Users.Include(y => y.UserCompetitions.Where(z => z.CompetitionId == req.CompetitionId)).First(x => x.Id == userGame.UserId);
+                                currentUser.UserCompetitions!.First().Points += points;
                             }
                         }
                     }

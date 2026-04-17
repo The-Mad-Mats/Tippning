@@ -7,7 +7,21 @@
 <div class="container">
     
     <div class="header">
-        <h2>Games Management</h2>
+        <h2>Match admin</h2>
+    </div>
+
+    <div class="filters-container">
+        <div class="filter-section">
+            <label for="competition">Välj tävling:</label>
+            <select id="competition" class="form-select" @bind="selectedCompetition" @bind:after="OnCompetitionChanged">
+                @foreach (var category in Competitions)
+                {
+                    <option value="@category.Id">
+                        @category.Name
+                    </option>
+                }
+            </select>
+        </div>
     </div>
 
     <!-- GAMES LIST -->
@@ -165,6 +179,47 @@
         color: #2c3e50;
         font-size: 2rem;
     }
+
+    .filters-container {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .filter-section {
+        display: flex;
+        flex-direction: column;
+    }
+
+        .filter-section label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+    .form-select {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        background-color: white;
+        cursor: pointer;
+        transition: border-color 0.3s;
+    }
+
+        .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
 
     /* ===================================== */
     /* GAMES LIST */
@@ -561,4 +616,78 @@
         font-weight: 700;
         font-size: 1.5rem;
     }
+    /* ===================================== */
+    /* RESPONSIVE - MOBILE */
+    /* ===================================== */
+
+    @@media (max-width: 768px) {
+        .matches-container {
+            padding: 1rem;
+        }
+
+            .matches-container h3 {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+        .matches-list {
+            gap: 1rem;
+        }
+
+        .match-card {
+            padding: 1rem;
+        }
+
+        .match-time {
+            font-size: 0.85rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .teams-row {
+            gap: 0.5rem;
+        }
+
+        .team {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .team-flag {
+            width: 35px;
+            height: 35px;
+        }
+
+        .team-name {
+            font-size: 0.85rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .team-left .team-name {
+            white-space: nowrap;
+        }
+
+        .team-right .team-name {
+            white-space: nowrap;
+        }
+
+        .vs-divider {
+            font-size: 0.75rem;
+        }
+
+        .scores-row {
+            padding-top: 0.75rem;
+        }
+
+        .score-input {
+            width: 60px;
+            padding: 0.6rem;
+            font-size: 1.1rem;
+        }
+
+        .score-separator {
+            font-size: 1.25rem;
+        }
+    }
+
 </style>
