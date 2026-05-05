@@ -104,7 +104,7 @@ namespace TipsWeb.Pages
         {
             showJoinLeague = false;
             joinLeague = new Models.League();
-            await OnLeagueChanged();
+            await OnCompetitionChanged();
         }
         private async Task SaveJoinLeague()
         {
@@ -118,7 +118,8 @@ namespace TipsWeb.Pages
                 UserId = AppState.CurrentUser?.Id ?? 0,
                 Token = AppState.CurrentUser?.Token ?? "",
                 LeagueName = joinLeague.Name,
-                LeaguePassword = joinLeague.Password
+                LeaguePassword = joinLeague.Password,
+                CompetitionId = selectedCompetition
             };
             await Proxy.JoinLeague(league);
             ClosePopupJoin();
