@@ -59,6 +59,10 @@
             </div>
         }
     </div>
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <div class="message">@message</div>
+    }
 
     <button class="btn btn-primary btn-save" @onclick="Spara">Spara</button>
 </div>
@@ -278,6 +282,17 @@
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         }
+
+    .message {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
+    }
 
     /* ===================================== */
     /* RESPONSIVE - MOBILE */

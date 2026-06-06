@@ -166,6 +166,10 @@
                     <input type="text" id="password" class="form-control" @bind="joinLeague.Password" />
                 </div>
             </div>
+            @if (!string.IsNullOrEmpty(message))
+            {
+                <div class="message">@message</div>
+            }
             <div class="modal-footer">
                 <button class="btn btn-secondary" @onclick="ClosePopupJoin">Avbryt</button>
                 <button class="btn btn-primary" @onclick="SaveJoinLeague">Gå med i liga</button>
@@ -443,6 +447,17 @@
         gap: 1rem;
         padding: 1.5rem;
         border-top: 1px solid #e0e0e0;
+    }
+
+    .message {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        border-radius: 6px;
+        text-align: center;
+        font-weight: 600;
     }
 
     /* ===================================== */

@@ -11,6 +11,8 @@ namespace TipsWeb.Pages
         private List<Game> Games { get; set; } = new();
         private List<Models.Competition> Competitions = new List<Models.Competition> { };
         private int selectedCompetition = 0;
+        private string message = string.Empty;
+
         //private DotNetObjectReference<RankTeam> objRef;
 
 
@@ -73,6 +75,8 @@ namespace TipsWeb.Pages
                 }
             }
             Proxy.SaveGames(saveGamesReq);
+            message = "Tips sparat!";
+
         }
     }
 }

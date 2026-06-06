@@ -17,6 +17,7 @@ namespace TipsWeb.Pages
         private Models.League joinLeague = new();
         private bool showCreateLeague = false;
         private bool showJoinLeague = false;
+        private string message = string.Empty;
 
         protected override async Task OnInitializedAsync()
         {
@@ -121,8 +122,23 @@ namespace TipsWeb.Pages
                 LeaguePassword = joinLeague.Password,
                 CompetitionId = selectedCompetition
             };
-            await Proxy.JoinLeague(league);
-            ClosePopupJoin();
+            var result = await Proxy.JoinLeague(league);
+            if (result == 0)
+            {
+                ClosePopupJoin();
+            }
+            else if (result == 1)
+            {
+                message = "Felaktigt namn eller lösenord.";
+            }
+            else if (result == 2)
+            {
+                message = "Du är redan medlem i denna liga.";
+            }
+            else if (result == 3)
+            {
+                message = "Något gick fel.";
+            }
         }
     }
 }

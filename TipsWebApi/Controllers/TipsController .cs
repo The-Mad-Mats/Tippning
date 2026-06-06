@@ -297,7 +297,7 @@ public class TipsController : ControllerBase
 
     [HttpPost]
     [Route("JoinLeague")]
-    public bool JoinLeague(CreateOrJoinLeageReq req)
+    public int JoinLeague(CreateOrJoinLeageReq req)
     {
         try
         {
@@ -307,6 +307,11 @@ public class TipsController : ControllerBase
                 var league = _context.Leagues.FirstOrDefault(x => x.Name == req.LeagueName && x.Password == req.LeaguePassword && x.CompetitionId == req.CompetitionId);
                 if (league != null)
                 {
+                    var ul = _context.UserLeagues.FirstOrDefault(x => x.UserId == req.UserId && x.LeagueId == league.Id);
+                    if (ul != null)
+                    {
+                        return 2; //Already in league
+                    }
                     var userleague = new Entities.UserLeague
                     {
                         LeagueId = league.Id,
@@ -327,15 +332,15 @@ public class TipsController : ControllerBase
                         _context.UserCompetitions.Add(usercompetition);
                         _context.SaveChanges();
                     }
-                    return true;
+                    return 0;
                 }
-                return true;
+                return 1;
             }
-            return false;
+            return 3;
         }
         catch (Exception)
         {
-            return false;
+            return 3;
         }
     }
     private bool CheckUser(int userId, string token)

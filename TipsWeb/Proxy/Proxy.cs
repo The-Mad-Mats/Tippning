@@ -161,13 +161,13 @@ namespace TipsWeb
             }
         }
 
-        public async Task<bool> JoinLeague(CreateOrJoinLeageReq content)
+        public async Task<int> JoinLeague(CreateOrJoinLeageReq content)
         {
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("Tips/JoinLeague", content);
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<bool>();
+                return await response.Content.ReadFromJsonAsync<int>();
             }
             catch (Exception ex)
             {
