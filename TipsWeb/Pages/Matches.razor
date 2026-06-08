@@ -36,7 +36,7 @@
                     <div class="vs-divider">VS</div>
 
                     <div class="team team-right">
-                        <img src="@item.Team2Flag" alt="@item.Team2" class="team-flag"  />
+                        <img src="@item.Team2Flag" alt="@item.Team2" class="team-flag" />
                         <span class="team-name">@item.Team2</span>
                     </div>
                 </div>
@@ -59,12 +59,13 @@
             </div>
         }
     </div>
-    @if (!string.IsNullOrEmpty(message))
-    {
-        <div class="message">@message</div>
-    }
-
-    <button class="btn btn-primary btn-save" @onclick="Spara">Spara</button>
+    <div class="sticky-save">
+        @if (!string.IsNullOrEmpty(message))
+        {
+            <div class="message">@message</div>
+        }
+        <button class="btn btn-primary btn-save" @onclick="Spara">Spara</button>
+    </div>
 </div>
 
 <style>
@@ -258,8 +259,17 @@
     }
 
     /* ===================================== */
-    /* BUTTON */
+    /* STICKY SAVE */
     /* ===================================== */
+
+    .sticky-save {
+        position: sticky;
+        bottom: 0;
+        background: white;
+        padding: 1rem 0;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        z-index: 100;
+    }
 
     .btn-save {
         width: 100%;
@@ -284,7 +294,7 @@
         }
 
     .message {
-        margin-top: 1.5rem;
+        margin-bottom: 0.75rem;
         padding: 1rem;
         background: #d4edda;
         color: #155724;
@@ -366,6 +376,8 @@
         .score-separator {
             font-size: 1.25rem;
         }
+
+
     }
 
     @@media (max-width: 480px) {

@@ -53,11 +53,11 @@ namespace TipsWeb.Pages
             LeagueResult = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token, CompetitionId = selectedCompetition });
     }
 
-        private async Task JoinLeague()
+        private void JoinLeague()
         {
             OpenPopupJoin();
         }
-        private async Task CreateLeague()
+        private void CreateLeague()
         {
             OpenPopupCreate();
         }
@@ -91,7 +91,7 @@ namespace TipsWeb.Pages
                 CompetitionId = selectedCompetition
             };
             await Proxy.CreateLeague(league);
-            ClosePopupCreate();
+            await ClosePopupCreate();
         }
         // ========================================
         // POPUP JoinLeague METHODS
@@ -138,6 +138,10 @@ namespace TipsWeb.Pages
             else if (result == 3)
             {
                 message = "Något gick fel.";
+            }
+            else if (result == 4)
+            {
+                message = "Du är inte inloggad.";
             }
         }
     }

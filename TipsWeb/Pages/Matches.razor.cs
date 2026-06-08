@@ -53,7 +53,7 @@ namespace TipsWeb.Pages
             }
         }
 
-        private void Spara()
+        private async Task Spara()
         {
             var saveGamesReq = new SaveGamesReq
             {
@@ -74,7 +74,7 @@ namespace TipsWeb.Pages
                     saveGamesReq.Games.Add(gameResult);
                 }
             }
-            Proxy.SaveGames(saveGamesReq);
+            await Proxy.SaveGames(saveGamesReq);
             message = "Tips sparat!";
 
         }

@@ -336,7 +336,7 @@ public class TipsController : ControllerBase
                 }
                 return 1;
             }
-            return 3;
+            return 4;
         }
         catch (Exception)
         {
