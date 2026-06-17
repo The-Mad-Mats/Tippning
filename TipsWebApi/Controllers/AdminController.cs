@@ -178,11 +178,7 @@ public class AdminController : ControllerBase
                                          (userGame.Team1Score < userGame.Team2Score && gameReq.Team1Score < gameReq.Team2Score) ||
                                          (userGame.Team1Score == userGame.Team2Score && gameReq.Team1Score == gameReq.Team2Score))
                                 {
-                                    points += 1; // Correct outcome
-                                }
-                                if (points == 4)
-                                {
-                                    points += 2; // Bonus for perfect tip
+                                    points += 2; // Correct outcome
                                 }
                                 userGame.Points = points;
                                 var currentUser = _context.Users.Include(y => y.UserCompetitions.Where(z => z.CompetitionId == req.CompetitionId)).First(x => x.Id == userGame.UserId);

@@ -1,5 +1,12 @@
 ﻿@page "/rankteam"
 
+@if (AppState.CurrentUser == null)
+{
+    <div class="login-banner">
+        ⚠️ Du är inte inloggad.
+    </div>
+}
+
 <div class="ranking-container">
     <h3>Tippa sluttabell</h3>
     <p class="subtitle">Dra och släpp för att ordna hur du tror att sluttabellen kommer se ut. Deadline @StartTid</p>
@@ -145,6 +152,23 @@
 </script>
 
 <style>
+    /* ===================================== */
+    /* LOGIN BANNER */
+    /* ===================================== */
+
+    .login-banner {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: #fff3cd;
+        color: #856404;
+        border-bottom: 2px solid #ffc107;
+        padding: 0.85rem 2rem;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
     /* ===================================== */
     /* CONTAINER */
     /* ===================================== */

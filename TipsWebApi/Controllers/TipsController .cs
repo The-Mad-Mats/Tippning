@@ -175,7 +175,11 @@ public class TipsController : ControllerBase
                     }
                 }
                 leagueResult.Matches = new List<Match>();
-                var games = _context.Games.Include(x => x.UserGames).ThenInclude(y => y.User).Where(z => z.CompetitionId == req.CompetitionId).ToList();
+                var games = _context.Games.Include(x => x.UserGames)
+                    .ThenInclude(y => y.User)
+                    .Where(z => z.CompetitionId == req.CompetitionId)
+                    .OrderByDescending(a => a.GameTime)
+                    .ToList();
                 foreach (var game in games.Where(x => x.GameTime < DateTime.Now))
                 {
                     var match = new Match

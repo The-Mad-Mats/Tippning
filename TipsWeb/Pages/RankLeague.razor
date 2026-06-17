@@ -1,6 +1,13 @@
 ﻿@page "/rankleagues"
 @inject Models.AppState AppState
 
+@if (AppState.CurrentUser == null)
+{
+    <div class="login-banner">
+        ⚠️ Du är inte inloggad.
+    </div>
+}
+
 <div class="container">
     <div class="header">
         <h2>Ranking</h2>
@@ -199,6 +206,23 @@
 }
 
 <style>
+    /* ===================================== */
+    /* LOGIN BANNER */
+    /* ===================================== */
+
+    .login-banner {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: #fff3cd;
+        color: #856404;
+        border-bottom: 2px solid #ffc107;
+        padding: 0.85rem 2rem;
+        text-align: center;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+
     /* ===================================== */
     /* CONTAINER & LAYOUT */
     /* ===================================== */
