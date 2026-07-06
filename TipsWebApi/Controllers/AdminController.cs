@@ -101,7 +101,7 @@ public class AdminController : ControllerBase
             try
             {
                 var games = new List<Models.Game>();
-                games = _context.Games.Where(x => x.CompetitionId == req.CompetitionId).AsNoTracking().Select(g => new Models.Game()
+                games = _context.Games.Where(x => x.CompetitionId == req.CompetitionId).OrderBy(x => x.GameTime).AsNoTracking().Select(g => new Models.Game()
                 {
                     Id = g.Id,
                     GameTime = g.GameTime,

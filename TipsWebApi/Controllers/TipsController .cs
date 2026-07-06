@@ -94,7 +94,7 @@ public class TipsController : ControllerBase
             {
                 allGames.Single(x => x.Id == myGame.GameId).UserGames!.Add(myGame);
             }
-            foreach (var game in allGames)
+            foreach (var game in allGames.OrderBy(x => x.GameTime))
             {
                 games.Add(new Models.Game
                 {

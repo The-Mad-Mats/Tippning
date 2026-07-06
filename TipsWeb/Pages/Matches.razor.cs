@@ -12,6 +12,7 @@ namespace TipsWeb.Pages
         private List<Models.Competition> Competitions = new List<Models.Competition> { };
         private int selectedCompetition = 0;
         private string message = string.Empty;
+        private bool showPastMatches = false;
 
         //private DotNetObjectReference<RankTeam> objRef;
 

@@ -24,46 +24,56 @@
         </div>
     </div>
 
+    @if (!showPastMatches && Games.Any(g => g.GameTime < DateTime.Now))
+    {
+        <div class="show-past-link">
+            <a href="javascript:void(0)" @onclick="() => showPastMatches = true">Visa tidigare matcher</a>
+        </div>
+    }
+
     <div class="matches-list">
         @foreach (var item in Games)
         {
-            <div class="match-card">
-                <!-- Date/Time -->
-                <div class="match-time">
-                    @item.GameTime.ToString("g")
-                </div>
-
-                <!-- Teams Row -->
-                <div class="teams-row">
-                    <div class="team team-left">
-                        <span class="team-name">@item.Team1</span>
-                        <img src="@item.Team1Flag" alt="@item.Team1" class="team-flag" />
+            @if (showPastMatches || item.GameTime >= DateTime.Now)
+            {
+                <div class="match-card">
+                    <!-- Date/Time -->
+                    <div class="match-time">
+                        @item.GameTime.ToString("g")
                     </div>
 
-                    <div class="vs-divider">VS</div>
+                    <!-- Teams Row -->
+                    <div class="teams-row">
+                        <div class="team team-left">
+                            <span class="team-name">@item.Team1</span>
+                            <img src="@item.Team1Flag" alt="@item.Team1" class="team-flag" />
+                        </div>
 
-                    <div class="team team-right">
-                        <img src="@item.Team2Flag" alt="@item.Team2" class="team-flag" />
-                        <span class="team-name">@item.Team2</span>
+                        <div class="vs-divider">VS</div>
+
+                        <div class="team team-right">
+                            <img src="@item.Team2Flag" alt="@item.Team2" class="team-flag" />
+                            <span class="team-name">@item.Team2</span>
+                        </div>
+                    </div>
+
+                    <!-- Scores Row -->
+                    <div class="scores-row">
+                        @if (item.IsEditable)
+                        {
+                            <input type="text" class="score-input" @bind="item.Team1Score" />
+                            <span class="score-separator">-</span>
+                            <input type="text" class="score-input" @bind="item.Team2Score" />
+                        }
+                        else
+                        {
+                            <input type="text" class="score-input" @bind="item.Team1Score" readonly />
+                            <span class="score-separator">-</span>
+                            <input type="text" class="score-input" @bind="item.Team2Score" readonly />
+                        }
                     </div>
                 </div>
-
-                <!-- Scores Row -->
-                <div class="scores-row">
-                    @if (item.IsEditable)
-                    {
-                        <input type="text" class="score-input" @bind="item.Team1Score" />
-                        <span class="score-separator">-</span>
-                        <input type="text" class="score-input" @bind="item.Team2Score" />
-                    }
-                    else
-                    {
-                        <input type="text" class="score-input" @bind="item.Team1Score" readonly />
-                        <span class="score-separator">-</span>
-                        <input type="text" class="score-input" @bind="item.Team2Score" readonly />
-                    }
-                </div>
-            </div>
+            }
         }
     </div>
     <div class="sticky-save">
@@ -159,6 +169,27 @@
             outline: none;
             border-color: #667eea;
         }
+
+    /* ===================================== */
+    /* SHOW PAST MATCHES LINK */
+    /* ===================================== */
+
+    .show-past-link {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+
+        .show-past-link a {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+            .show-past-link a:hover {
+                color: #5568d3;
+            }
 
     /* ===================================== */
     /* MATCH CARD */

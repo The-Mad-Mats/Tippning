@@ -16,6 +16,12 @@ namespace TipsWeb.Pages
         private Game newGame = new();
         private List<Models.Competition> Competitions = new List<Models.Competition> { };
         private int selectedCompetition = 0;
+        bool showPastMatches = false;
+
+        void TogglePastMatches()
+        {
+            showPastMatches = !showPastMatches;
+        }
 
         // ========================================
         // LIFECYCLE METHODS
