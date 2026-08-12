@@ -117,6 +117,13 @@ public class RankController : ControllerBase
                     leagues.Add(leagueDto);
                 }
             }
+            //var worldLeagueDto = new Models.League
+            //{
+            //    Id = 0,
+            //    Name = "Världen",
+            //};
+            //leagues.Add(worldLeagueDto);
+
             return leagues;
         }
         return new List<Models.League>();

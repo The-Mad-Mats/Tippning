@@ -46,102 +46,133 @@
 
     @if (rankLeague != null && rankLeague.TeamRanks.Any())
     {
-        <div class="rank-league-container">
-            <div class="table-wrapper">
-                <table class="rank-table">
-                    <thead>
+        <!-- Simple Summary Table -->
+        <div class="summary-table-container">
+            <table class="simple-summary-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Lag</th>
+                        <th>Poäng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var orderedUsers = rankLeague.UserTeamRanks.OrderBy(x => x.Points).ToList();
+                    }
+                    @for (int i = 0; i < orderedUsers.Count; i++)
+                    {
+                        var userTeamRank = orderedUsers[i];
                         <tr>
-                            <th class="order-header">#</th>
-                            <th class="team-header">Lag</th>
-                            @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
-                            {
-                                <th class="user-header">@userTeamRank.Team</th>
-                            }
+                            <td class="simple-order-cell">@(i + 1)</td>
+                            <td class="simple-team-cell">@userTeamRank.Team</td>
+                            <td class="simple-points-cell">
+                                <span class="simple-points">@userTeamRank.Points</span>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @for (int i = 0; i < rankLeague.TeamRanks.Count; i++)
-                        {
-                            var teamRank = rankLeague.TeamRanks[i];
-                            <tr>
-                                <td class="order-cell">@(i + 1)</td>
-                                <td class="team-cell">@teamRank.Team</td>
-                                @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
-                                {
-                                    var userRank = userTeamRank.UserRanks.FirstOrDefault(ur => ur.TeamId == teamRank.TeamId);
-                                    <td class="points-cell">
-                                        @if (userRank != null)
-                                        {
-                                            <span class="points">@userRank.Points</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="no-points">-</span>
-                                        }
-                                    </td>
-                                }
-                            </tr>
-                        }
-                    </tbody>
-                    <tfoot>
-                        <tr class="summary-row">
-                            <td class="summary-order"></td>
-                            <td class="summary-label">Totalt</td>
-                            @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
-                            {
-                                <td class="summary-cell">
-                                    <span class="summary-points">@userTeamRank.Points</span>
-                                </td>
-                            }
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
+                    }
+                </tbody>
+            </table>
         </div>
-
-        <!-- Individual User Tables -->
-        <div class="user-tables-container">
-            @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
-            {
-                <div class="user-table-wrapper">
-                    <h4 class="user-table-title">@userTeamRank.Team</h4>
-                    <table class="user-rank-table">
+        @if(@selectedLeague != 0)
+        {
+            <div class="rank-league-container">
+                <div class="table-wrapper">
+                    <table class="rank-table">
                         <thead>
                             <tr>
-                                <th class="user-order-header">#</th>
-                                <th class="user-team-header">Lag</th>
-                                <th class="user-points-header">Poäng</th>
+                                <th class="order-header">#</th>
+                                <th class="team-header">Lag</th>
+                                @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
+                                {
+                                    <th class="user-header">@userTeamRank.Team</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
-                            @{
-                                var orderedRanks = userTeamRank.UserRanks.OrderBy(ur => ur.Rank).ToList();
-                            }
-                            @for (int i = 0; i < orderedRanks.Count; i++)
+                            @for (int i = 0; i < rankLeague.TeamRanks.Count; i++)
                             {
-                                var userRank = orderedRanks[i];
-                                var team = rankLeague.TeamRanks.FirstOrDefault(t => t.TeamId == userRank.TeamId);
+                                var teamRank = rankLeague.TeamRanks[i];
                                 <tr>
-                                    <td class="user-order-cell">@(i + 1)</td>
-                                    <td class="user-team-cell">@(team?.Team ?? "Unknown")</td>
-                                    <td class="user-points-cell">
-                                        <span class="user-points">@userRank.Points</span>
-                                    </td>
+                                    <td class="order-cell">@(i + 1)</td>
+                                    <td class="team-cell">@teamRank.Team</td>
+                                    @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
+                                    {
+                                        var userRank = userTeamRank.UserRanks.FirstOrDefault(ur => ur.TeamId == teamRank.TeamId);
+                                        <td class="points-cell">
+                                            @if (userRank != null)
+                                            {
+                                                <span class="points">@userRank.Points</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="no-points">-</span>
+                                            }
+                                        </td>
+                                    }
                                 </tr>
                             }
                         </tbody>
                         <tfoot>
-                            <tr class="user-summary-row">
-                                <td colspan="2" class="user-summary-label">Totalt</td>
-                                <td class="user-summary-cell">
-                                    <span class="user-summary-points">@userTeamRank.Points</span>
-                                </td>
+                            <tr class="summary-row">
+                                <td class="summary-order"></td>
+                                <td class="summary-label">Totalt</td>
+                                @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
+                                {
+                                    <td class="summary-cell">
+                                        <span class="summary-points">@userTeamRank.Points</span>
+                                    </td>
+                                }
                             </tr>
                         </tfoot>
                     </table>
                 </div>
-            }
-        </div>
+            </div>
+
+            <!-- Individual User Tables -->
+            <div class="user-tables-container">
+                @foreach (var userTeamRank in rankLeague.UserTeamRanks.OrderBy(x => x.Points))
+                {
+                    <div class="user-table-wrapper">
+                        <h4 class="user-table-title">@userTeamRank.Team</h4>
+                        <table class="user-rank-table">
+                            <thead>
+                                <tr>
+                                    <th class="user-order-header">#</th>
+                                    <th class="user-team-header">Lag</th>
+                                    <th class="user-points-header">Poäng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    var orderedRanks = userTeamRank.UserRanks.OrderBy(ur => ur.Rank).ToList();
+                                }
+                                @for (int i = 0; i < orderedRanks.Count; i++)
+                                {
+                                    var userRank = orderedRanks[i];
+                                    var team = rankLeague.TeamRanks.FirstOrDefault(t => t.TeamId == userRank.TeamId);
+                                    <tr>
+                                        <td class="user-order-cell">@(i + 1)</td>
+                                        <td class="user-team-cell">@(team?.Team ?? "Unknown")</td>
+                                        <td class="user-points-cell">
+                                            <span class="user-points">@userRank.Points</span>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr class="user-summary-row">
+                                    <td colspan="2" class="user-summary-label">Totalt</td>
+                                    <td class="user-summary-cell">
+                                        <span class="user-summary-points">@userTeamRank.Points</span>
+                                    </td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                }
+            </div>
+        }
     }
     else
     {
@@ -334,6 +365,85 @@
         .btn-third:hover {
             background: #5568d3;
         }
+
+    /* ===================================== */
+    /* SIMPLE SUMMARY TABLE */
+    /* ===================================== */
+
+    .summary-table-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin-bottom: 2rem;
+        display: inline-block;
+        min-width: 280px;
+    }
+
+    .simple-summary-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+        .simple-summary-table thead {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .simple-summary-table th {
+            padding: 0.85rem 1.25rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+            .simple-summary-table th:last-child {
+                text-align: center;
+            }
+
+        .simple-summary-table tbody tr {
+            border-bottom: 1px solid #ecf0f1;
+            transition: background 0.2s;
+        }
+
+            .simple-summary-table tbody tr:last-child {
+                border-bottom: none;
+            }
+
+            .simple-summary-table tbody tr:hover {
+                background: #f8f9fa;
+            }
+
+    .simple-order-cell {
+        padding: 0.85rem 1.25rem;
+        font-weight: 700;
+        color: #667eea;
+        width: 40px;
+    }
+
+    .simple-team-cell {
+        padding: 0.85rem 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .simple-points-cell {
+        padding: 0.85rem 1.25rem;
+        text-align: center;
+    }
+
+    .simple-points {
+        display: inline-block;
+        background: #27ae60;
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.9rem;
+    }
+
     /* ===================================== */
     /* NO RESULTS */
     /* ===================================== */
@@ -758,7 +868,7 @@
         .header h2 {
             font-size: 1.5rem;
         }
-        /* Filters stack on mobile */
+
         .filters-container {
             grid-template-columns: 1fr;
             gap: 1rem;
@@ -773,7 +883,12 @@
         .btn {
             width: 100%;
         }
-        /* Remove sticky positioning on mobile */
+
+        .summary-table-container {
+            width: 100%;
+            display: block;
+        }
+
         .order-header,
         .team-header,
         .order-cell,
