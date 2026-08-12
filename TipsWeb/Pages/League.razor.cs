@@ -51,7 +51,7 @@ namespace TipsWeb.Pages
         {
             var leagueId = Leagues.FirstOrDefault(l => l.Id == selectedLeague)?.Id ?? 0;
             LeagueResult = await Proxy.GetLeague(new GetLeagueReq { LeagueId = leagueId, UserId = user.Id, Token = user.Token, CompetitionId = selectedCompetition });
-    }
+        }
 
         private void JoinLeague()
         {

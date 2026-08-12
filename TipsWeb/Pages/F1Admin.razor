@@ -1,0 +1,24 @@
+﻿@page "/f1admin"
+@inject Models.AppState AppState
+
+<h3>Filuppladdning</h3>
+
+<div class="form-group">
+    <label for="season">Ange säsong</label>
+    <input id="season" class="form-control" @bind="seasonText" />
+</div>
+
+<br />
+
+<InputFile OnChange="HandleSelectedFiles" Multiple="true" />
+@if (selectedFiles?.Count > 0)
+{
+    <h4>Selected files:</h4>
+    <ul>
+        @foreach (var file in selectedFiles)
+        {
+            <li>@file.Name (@file.Size bytes)</li>
+        }
+    </ul>
+}
+

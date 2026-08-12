@@ -1,5 +1,7 @@
 ﻿using System.Net.Http.Json;
 using TipsWeb.Models;
+using TipsWeb.Models.F1;
+
 //using TipsWebApi.Models;
 using static System.Net.WebRequestMethods;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -371,6 +373,65 @@ namespace TipsWeb
                 var response = await _httpClient.PostAsJsonAsync("Admin/SaveCurrentRank", content);
                 response.EnsureSuccessStatusCode();
                 return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+
+        //F1
+        public async Task SaveFile(SaveFilesReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("F1/SaveFiles", content);
+                response.EnsureSuccessStatusCode();
+                //return await response.Content.ReadFromJsonAsync<bool>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+
+        public async Task<List<F1Season>> GetF1Seasons(GetF1SeasonsReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("F1/GetF1Seasons", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<F1Season>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+        public async Task<List<F1Track>> GetF1Tracks(GetF1TracksReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("F1/GetF1Tracks", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<List<F1Track>>();
+            }
+            catch (Exception ex)
+            {
+                // Handle exception
+                throw new ApplicationException($"Error posting data to API: {ex.Message}");
+            }
+        }
+        public async Task<F1TrackResult> GetF1TrackResult(GetF1TrackResultReq content)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("F1/GetF1TrackResult", content);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<F1TrackResult>();
             }
             catch (Exception ex)
             {

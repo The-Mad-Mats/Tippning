@@ -89,6 +89,30 @@ public class ApplicationDbContext : DbContext
             .WithMany(u => u.UserCompetitions)
             .HasForeignKey(ul => ul.UserId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<F1Qualifying>()
+            .HasOne(ul => ul.Season)
+            .WithMany(u => u.Qualifyings)
+            .HasForeignKey(ul => ul.F1SeasonId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<F1Race>()
+            .HasOne(ul => ul.Season)
+            .WithMany(u => u.Races)
+            .HasForeignKey(ul => ul.F1SeasonId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<F1QualifyingRows>()
+            .HasOne(ul => ul.Qualifying)
+            .WithMany(u => u.QualifyingRows)
+            .HasForeignKey(ul => ul.F1QualifyingId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<F1RaceRows>()
+            .HasOne(ul => ul.Race)
+            .WithMany(u => u.RaceRows)
+            .HasForeignKey(ul => ul.F1RaceId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
@@ -104,4 +128,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<RankCompetition> RankCompetitions { get; set; }
     public DbSet<Competition> Competitions { get; set; }
     public DbSet<UserCompetition> UserCompetitions { get; set; }
+    public DbSet<F1Season> F1Seasons { get; set; }
+    public DbSet<F1RaceRows> F1RaceRows { get; set; }
+    public DbSet<F1QualifyingRows> F1QualifyingRows { get; set; }
+    public DbSet<F1Qualifying> F1Qualifyings { get; set; }
+    public DbSet<F1Race> F1Races { get; set; }
 }

@@ -1,0 +1,229 @@
+﻿@page "/f1"
+@inject Models.AppState AppState
+
+<h3 class="page-title">F1</h3>
+
+<!-- ========================= -->
+<!-- SEASON + TRACK SELECTORS -->
+<!-- ========================= -->
+<div class="selectors">
+    <div class="selector">
+        <label>Säsong</label>
+        <select class="form-select" @bind="selectedSeason" @bind:after="OnSeasonChanged">
+            <option value="">-- Välj säsong --</option>
+            @foreach (var s in Seasons)
+            {
+                <option value="@s.Id">@s.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="selector">
+        <label>Bana</label>
+        <select class="form-select" @bind="selectedTrack" @bind:after="OnTrackChanged">
+            <option value="">-- Välj bana --</option>
+            @foreach (var t in Tracks)
+            {
+                <option value="@t.Name">@t.Name</option>
+            }
+        </select>
+    </div>
+</div>
+
+<!-- ========================= -->
+<!-- TABS -->
+<!-- ========================= -->
+<div class="tabs">
+    <button class="tab-btn @(activeTab == "qual" ? "active" : "")"
+            @onclick='() => SetTab("qual")'>
+        Qualification
+    </button>
+
+    <button class="tab-btn @(activeTab == "race" ? "active" : "")"
+            @onclick='() => SetTab("race")'>
+        Race
+    </button>
+
+    <button class="tab-btn @(activeTab == "stand" ? "active" : "")"
+            @onclick='() => SetTab("stand")'>
+        Standings
+    </button>
+</div>
+
+<!-- ========================= -->
+<!-- QUALIFICATION TAB -->
+<!-- ========================= -->
+@if (activeTab == "qual")
+{
+    <div class="list-container">
+        @if(TrackResult != null && TrackResult.Qualifying != null)
+        {
+            @foreach (var q in TrackResult.Qualifying.QualifyingRows)
+            {
+                <div class="row-item">
+                    <div class="col pos">@q.Position</div>
+                    <div class="col driver">@q.Driver</div>
+                    <div class="col time">@q.Time</div>
+                </div>
+            }
+        }
+    </div>
+}
+
+<!-- ========================= -->
+<!-- RACE TAB -->
+<!-- ========================= -->
+@if (activeTab == "race")
+{
+    <div class="list-container">
+    @if (TrackResult != null && TrackResult.Race != null)
+    {
+        @foreach (var r in TrackResult.Race.RaceRows)
+        {
+            <div class="row-item expandable">
+                <div class="row-main" @onclick="() => ToggleRaceExpand(r)">
+                    <div class="col pos">@r.Position</div>
+                    <div class="col driver">@r.Driver</div>
+                    <div class="col time">@r.Time</div>
+                    <div class="col arrow">@((r.Expanded ? "▲" : "▼"))</div>
+                </div>
+
+                @if (r.Expanded)
+                {
+                    <div class="row-details">
+                            <div><strong>Team:</strong> @r.Team</div>
+                            <div><strong>Grid:</strong> @r.Grid</div>
+                            <div><strong>Stops:</strong> @r.Stops</div>
+                            <div><strong>Best:</strong> @r.Best</div>
+                            <div><strong>Time:</strong> @r.Time</div>
+                            <div><strong>Points:</strong> @r.Points</div>
+                            <div><strong>Penalties:</strong> @r.Penalties</div>
+                            <div><strong>PenTime:</strong> @r.PenTime</div>
+                        </div>
+                }
+            </div>
+        }
+        }
+    </div>
+}
+
+<!-- ========================= -->
+<!-- STANDINGS TAB -->
+<!-- ========================= -->
+@if (activeTab == "stand")
+{
+    <div class="list-container">
+    @if (TrackResult != null && TrackResult.Standing != null)
+    {
+
+        @foreach (var s in TrackResult.Standing.Rows)
+        {
+            <div class="row-item">
+                <div class="col pos">@s.Position</div>
+                <div class="col driver">@s.Driver</div>
+                <div class="col points">@s.Points</div>
+            </div>
+        }
+    }
+    </div>
+}
+
+<style>
+.page-title {
+    margin-bottom: 1rem;
+}
+
+/* Dropdowns */
+.selectors {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.selector {
+    flex: 1;
+    min-width: 200px;
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    background: #ddd;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.tab-btn.active {
+    background: #667eea;
+    color: white;
+}
+
+/* Lists */
+.list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.row-item {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.row-item.expandable {
+    cursor: pointer;
+}
+
+.row-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.row-details {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #eee;
+}
+
+/* Columns */
+.col {
+    flex: 1;
+}
+
+.pos {
+    font-weight: 700;
+}
+
+.driver {
+    font-weight: 600;
+}
+
+.time, .points {
+    text-align: right;
+}
+
+/* Mobile */
+@@media (max-width: 600px) {
+    .row-main {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .time, .points {
+        text-align: left;
+    }
+}
+</style>

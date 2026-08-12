@@ -9,5 +9,6 @@
         public int Points { get; set; }
         public string Token { get; set; } = "";
         public bool Admin { get; set; }
+        public bool F1 { get; set; }
     }
 }

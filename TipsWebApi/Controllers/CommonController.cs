@@ -48,6 +48,7 @@ public class CommonController : ControllerBase
                 Points = user.Points,
                 Token = user.Token,
                 Admin = user.Admin,
+                F1 = user.F1
             };
             user.LastLogin = DateTime.Now;
             _context.SaveChanges();
